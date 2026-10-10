@@ -18,7 +18,7 @@ function calcular() {
 function Tile({ n, label, i }) {
   return (
     <Reveal delay={0.1 + i * 0.07} y={30} className="flex flex-col items-center">
-      <div className="relative flex aspect-square w-full max-w-[150px] items-center justify-center overflow-hidden rounded-[26px] bg-[linear-gradient(180deg,#ffffff,#e6eeff)] shadow-[inset_0_-4px_0_rgb(29_68_196/0.15),0_14px_30px_-12px_rgb(5_20_80/0.55)]">
+      <div className="holo-rim relative flex aspect-square w-full max-w-[150px] items-center justify-center overflow-hidden rounded-[26px] shadow-[inset_0_-4px_0_rgb(29_68_196/0.12),0_14px_30px_-12px_rgb(5_20_80/0.6)]">
         <AnimatePresence mode="popLayout" initial={false}>
           <motion.span
             key={n}
@@ -47,7 +47,8 @@ export default function Countdown() {
 
   return (
     <section className="px-3 py-10 sm:px-6">
-      <div className="relative mx-auto max-w-5xl overflow-hidden rounded-[40px] bg-[radial-gradient(90%_80%_at_50%_0%,#4673ec_0%,#1d44c4_55%,#1a3aa8_100%)] px-5 py-16 text-center shadow-[0_40px_80px_-40px_rgb(29_68_196/0.8)] sm:px-10 md:py-20">
+      <div className="satin-cobalt glitter relative mx-auto max-w-5xl overflow-hidden rounded-[40px] px-5 py-16 text-center shadow-[0_40px_80px_-40px_rgb(29_68_196/0.8)] sm:px-10 md:py-20">
+        <div aria-hidden className="damasco-blanco" />
         {[
           ['8%', '14%', 18],
           ['90%', '20%', 12],

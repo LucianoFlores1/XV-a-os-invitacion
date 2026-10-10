@@ -22,11 +22,8 @@ function CD({ tema, girando }) {
     <div className="relative mx-auto aspect-square w-full max-w-[280px]">
       <div aria-hidden className="absolute inset-[-10%] rounded-full bg-[radial-gradient(circle,rgb(29_68_196/0.18),transparent_65%)]" />
       <div
-        className={`spin ${girando ? '' : 'paused'} absolute inset-0 rounded-full shadow-[0_30px_60px_-24px_rgb(29_68_196/0.65)]`}
-        style={{
-          background:
-            'conic-gradient(from 0deg, #dfe9ff, #f3e3ff, #d9f6ff, #ffffff, #c7d8ff, #e9dcff, #d4f1ff, #ffffff, #dfe9ff)',
-        }}
+        className={`cd-holo spin ${girando ? '' : 'paused'} absolute inset-0 rounded-full shadow-[0_30px_60px_-24px_rgb(29_68_196/0.65)]`}
+
       >
         <div className="absolute inset-0 rounded-full bg-[repeating-radial-gradient(circle_at_center,rgb(255_255_255/0)_0px,rgb(255_255_255/0)_3px,rgb(255_255_255/0.35)_4px)]" />
         <div className="absolute inset-0 rounded-full bg-[conic-gradient(from_200deg,transparent_0deg,rgb(255_255_255/0.85)_25deg,transparent_60deg,transparent_180deg,rgb(255_255_255/0.6)_210deg,transparent_250deg)] mix-blend-soft-light" />
@@ -171,7 +168,7 @@ export default function Musica() {
             </div>
           </Reveal>
 
-          <Reveal delay={0.08} className="paper-card min-w-0 p-4 sm:p-6">
+          <Reveal delay={0.08} className="paper-card lino min-w-0 p-4 sm:p-6">
             <label htmlFor="buscar" className="sr-only">
               Buscá un tema
             </label>

@@ -14,7 +14,7 @@ import Musica from './components/Musica'
 import Rsvp from './components/Rsvp'
 import MusicButton from './components/MusicButton'
 import Reveal from './components/Reveal'
-import { Bow } from './components/Deco'
+import { Bow, Perlas } from './components/Deco'
 
 // Cada toque en la página deja unos brillitos
 function useTapSparkles(activo) {
@@ -36,6 +36,7 @@ function Pagina() {
 
   return (
     <>
+      <div className="page-bg" aria-hidden />
       <Intro
         onOpen={() => {
           start()
@@ -54,6 +55,7 @@ function Pagina() {
       </main>
       <footer className="px-4 pt-6 pb-32 text-center">
         <Reveal>
+          <Perlas className="mx-auto mb-6 w-full max-w-sm" caida={22} />
           <Bow className="mx-auto w-20" />
           <p className="mt-4 font-display text-2xl font-bold text-ink">¡Te espero!</p>
           <p className="mt-1 font-script text-7xl text-cobalt">{CONFIG.nombre}</p>

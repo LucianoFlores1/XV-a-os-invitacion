@@ -2,7 +2,7 @@ import { CONFIG } from '../config'
 import { dia, mes } from '../lib/fecha'
 import { Sparkle } from './Deco'
 
-// Cinta azul inclinada que cruza la página
+// Cinta de satén azul inclinada, con puntilla arriba y abajo
 export default function Marquee() {
   const fecha = `${String(dia).padStart(2, '0')}.${String(mes).padStart(2, '0')}`
   const items = ['Mis XV', CONFIG.nombre, fecha, 'Noche azul', 'Mis XV', CONFIG.nombre, fecha, 'Noche azul']
@@ -17,10 +17,12 @@ export default function Marquee() {
     </div>
   )
   return (
-    <div aria-hidden className="relative z-10 -my-4 -rotate-3 overflow-hidden bg-[linear-gradient(180deg,#2c55d8,#1d44c4)] py-4 text-white shadow-[0_18px_40px_-16px_rgb(29_68_196/0.7)]">
-      <div className="marquee flex w-max">
-        {fila}
-        {fila}
+    <div aria-hidden className="satin-cobalt glitter puntilla-arriba puntilla-abajo relative z-10 my-8 -rotate-3 py-4 text-white shadow-[0_18px_40px_-16px_rgb(29_68_196/0.7)]">
+      <div className="overflow-hidden">
+        <div className="marquee flex w-max drop-shadow-[0_2px_0_rgb(10_25_90/0.35)]">
+          {fila}
+          {fila}
+        </div>
       </div>
     </div>
   )

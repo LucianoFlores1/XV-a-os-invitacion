@@ -73,8 +73,9 @@ export default function Intro({ onOpen }) {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
           style={fase === 'revelando' ? { WebkitMaskImage: mask, maskImage: mask } : undefined}
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-10 overflow-hidden bg-[radial-gradient(90%_60%_at_50%_40%,#3d6be6_0%,#1d44c4_45%,#142f94_100%)] px-6"
+          className="satin-cobalt glitter fixed inset-0 z-50 flex flex-col items-center justify-center gap-10 overflow-hidden px-6"
         >
+          <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(70%_50%_at_50%_45%,rgb(120_160_255/0.35),transparent_70%)]" />
           {BRILLOS.map((b, i) => (
             <Sparkle
               key={i}
@@ -115,14 +116,14 @@ export default function Intro({ onOpen }) {
               ref={tarjeta}
               animate={abierto ? { y: '-58%' } : { y: '0%' }}
               transition={{ type: 'spring', duration: 0.8, bounce: 0.25, delay: abierto ? 0.4 : 0 }}
-              className="absolute inset-x-[6%] top-[6%] bottom-[8%] flex flex-col items-center justify-center rounded-xl bg-[linear-gradient(180deg,#ffffff,#eef4ff)] text-cobalt shadow-[0_10px_30px_-10px_rgb(10_30_100/0.5)]"
+              className="paper-tex absolute inset-x-[6%] top-[6%] bottom-[8%] flex flex-col items-center justify-center rounded-xl text-cobalt shadow-[0_10px_30px_-10px_rgb(10_30_100/0.5)]"
             >
               <span className="text-[10px] font-semibold tracking-[0.4em] text-cobalt/70 uppercase">Mis XV</span>
               <span className="font-script text-5xl leading-tight">{CONFIG.nombre}</span>
             </motion.div>
 
             {/* cuerpo del sobre */}
-            <div className="absolute inset-0 overflow-hidden rounded-2xl bg-[linear-gradient(160deg,#f7faff,#d9e5ff)] shadow-[0_40px_80px_-20px_rgb(5_15_70/0.7)]">
+            <div className="lino absolute inset-0 overflow-hidden rounded-2xl shadow-[0_40px_80px_-20px_rgb(5_15_70/0.7)]">
               <div className="absolute inset-0 bg-[linear-gradient(to_top_right,#e3ecff_50%,transparent_50%),linear-gradient(to_top_left,#dbe6ff_50%,transparent_50%)] bg-[length:50%_100%] bg-[position:left_bottom,right_bottom] bg-no-repeat" />
               <div className="absolute inset-0 shadow-[inset_0_0_0_1px_rgb(255_255_255/0.8)]" />
             </div>
@@ -132,7 +133,7 @@ export default function Intro({ onOpen }) {
               animate={{ rotateX: abierto ? 180 : 0 }}
               transition={{ duration: 0.55, ease: easeInOut }}
               style={{ transformOrigin: 'top', clipPath: 'polygon(0 0, 100% 0, 50% 64%)', zIndex: solapaAtras ? -1 : 2 }}
-              className="absolute inset-x-0 top-0 h-full rounded-t-2xl bg-[linear-gradient(180deg,#ffffff,#e4edff)] shadow-[0_2px_0_rgb(29_68_196/0.08)]"
+              className="paper-tex absolute inset-x-0 top-0 h-full rounded-t-2xl shadow-[0_2px_0_rgb(29_68_196/0.08)]"
             />
 
             {/* moño */}

@@ -36,3 +36,40 @@ export function Sparkle({ className = '', style }) {
     </svg>
   )
 }
+
+// Guirnalda de perlas colgando en curva
+export function Perlas({ className = '', n = 23, caida = 34, k = 1 }) {
+  const W = 420
+  const perlas = Array.from({ length: n }, (_, i) => {
+    const t = i / (n - 1)
+    const x = 10 + t * (W - 20)
+    const y = 10 + caida * 4 * t * (1 - t)
+    const r = (6.2 + Math.sin(t * Math.PI) * 1.6) * k
+    return { x, y, r }
+  })
+  return (
+    <svg viewBox={`0 0 ${W} ${caida + 20 + 10 * k}`} className={className} aria-hidden>
+      <defs>
+        <radialGradient id="perla" cx="35%" cy="30%" r="75%">
+          <stop offset="0" stopColor="#ffffff" />
+          <stop offset="0.45" stopColor="#eef2fb" />
+          <stop offset="0.8" stopColor="#c3cde6" />
+          <stop offset="1" stopColor="#9eacd0" />
+        </radialGradient>
+      </defs>
+      <path
+        d={`M10 10 Q ${W / 2} ${10 + caida * 2} ${W - 10} 10`}
+        fill="none"
+        stroke="#b9c6e6"
+        strokeWidth="1"
+      />
+      {perlas.map((p, i) => (
+        <g key={i}>
+          <circle cx={p.x} cy={p.y + 1.5} r={p.r} fill="rgb(29 68 196 / .16)" />
+          <circle cx={p.x} cy={p.y} r={p.r} fill="url(#perla)" />
+          <ellipse cx={p.x - p.r * 0.3} cy={p.y - p.r * 0.35} rx={p.r * 0.3} ry={p.r * 0.2} fill="#fff" opacity=".9" />
+        </g>
+      ))}
+    </svg>
+  )
+}

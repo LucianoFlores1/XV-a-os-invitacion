@@ -5,7 +5,7 @@ import { Minus, Plus, WhatsappLogo } from '@phosphor-icons/react'
 import { CONFIG } from '../config'
 import { buzz, chime } from '../lib/juice'
 import { usePedidos } from '../lib/pedidos'
-import { Bow } from './Deco'
+import { Bow, Perlas } from './Deco'
 import Reveal from './Reveal'
 
 const ease = [0.23, 1, 0.32, 1]
@@ -70,9 +70,10 @@ export default function Rsvp() {
   return (
     <section id="confirmar" className="scroll-mt-6 px-4 py-24 md:py-32">
       <Reveal className="relative mx-auto max-w-xl">
+        <Perlas className="absolute top-0 left-1/2 z-10 w-[94%] -translate-x-1/2" caida={50} />
         <Bow className="absolute -top-14 left-1/2 z-10 w-32 -translate-x-1/2 drop-shadow-[0_10px_12px_rgb(29_68_196/0.3)]" />
         <div className="[filter:drop-shadow(0_30px_40px_rgb(29_68_196/0.25))]">
-          <div className="lace bg-[linear-gradient(180deg,#ffffff,#f1f6ff)] px-6 pt-20 pb-16 text-center sm:px-12">
+          <div className="lace paper-tex px-6 pt-24 pb-16 text-center sm:px-12">
             <p className="text-lg text-soft">Si vas a venir, me encantaría saberlo</p>
             <h2 className="mt-1 pb-1 font-script text-[clamp(3.2rem,12vw,4.8rem)] leading-[1.1] text-cobalt">Confirmá tu asistencia</h2>
             <p className="mt-3 text-soft">Tu presencia es el regalo más lindo.</p>

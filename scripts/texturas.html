@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  body { margin: 0; background: transparent; }
+  .t { display: block; }
+</style>
+</head>
+<body>
+<!-- Satén: relieve de pliegues calculado en punto flotante e iluminado (difusa + especular) -->
+<canvas id="satin-claro" class="t" width="1100" height="1600"></canvas>
+<canvas id="satin-cobalt" class="t" width="1200" height="1200"></canvas>
+<canvas id="glitter" class="t" width="512" height="512"></canvas>
+<canvas id="glitter-azul" class="t" width="512" height="512"></canvas>
+<canvas id="holo" class="t" width="1200" height="600"></canvas>
+
+<script>
+  function satin(id, { seed, angle, tonos, luz = [-0.5, -0.6, 0.62], brillo = 0.55, escala = 1 }) {
+    const c = document.getElementById(id), x = c.getContext('2d'), W = c.width, H = c.height
+    let sd = seed
+    const rnd = () => ((sd = (sd * 16807) % 2147483647) / 2147483647)
+    // ruido de valor suave
+    const G = 64, grid = Array.from({ length: G * G }, rnd)
+    const sm = (t) => t * t * t * (t * (t * 6 - 15) + 10)
+    const vn = (px, py) => {
+      const xi = Math.floor(px), yi = Math.floor(py), fx = sm(px - xi), fy = sm(py - yi)
+      const g = (i, j) => grid[(((j % G) + G) % G) * G + (((i % G) + G) % G)]
+      const a = g(xi, yi), b = g(xi + 1, yi), c2 = g(xi, yi + 1), d = g(xi + 1, yi + 1)
+      return a + (b - a) * fx + (c2 - a) * fy + (a - b - c2 + d) * fx * fy
+    }
+    const ca = Math.cos(angle), sa = Math.sin(angle)
+    const ondas = Array.from({ length: 3 }, (_, k) => ({ f: (0.0035 + rnd() * 0.003) * escala * (1 + k * 0.6), p: rnd() * 6.28, a: 1 / (1 + k * 1.2) }))
+    const h = (px, py) => {
+      const u = px * ca + py * sa, v = -px * sa + py * ca
+      const warp = vn(px * 0.0012 * escala, py * 0.0012 * escala) * 220 + vn(px * 0.003 * escala + 9, py * 0.003 * escala) * 40
+      let s = 0
+      for (const o of ondas) s += Math.sin((v + warp) * o.f + o.p + vn(u * 0.001 * escala, 3) * 2) * o.a
+      return s * 30
+    }
+    const img = x.createImageData(W, H), d = img.data
+    const L = (() => { const n = Math.hypot(...luz); return luz.map((q) => q / n) })()
+    const Hh = [L[0], L[1], L[2] + 1]; const hn = Math.hypot(...Hh); const Hv = Hh.map((q) => q / hn)
+    const lerp = (a, b, t) => a + (b - a) * t
+    for (let py = 0; py < H; py++) {
+      for (let px = 0; px < W; px++) {
+        const dx = h(px + 1, py) - h(px - 1, py), dy = h(px, py + 1) - h(px, py - 1)
+        let nx = -dx, ny = -dy, nz = 2
+        const nn = Math.hypot(nx, ny, nz); nx /= nn; ny /= nn; nz /= nn
+        const dif = Math.max(0, nx * L[0] + ny * L[1] + nz * L[2])
+        const spec = Math.pow(Math.max(0, nx * Hv[0] + ny * Hv[1] + nz * Hv[2]), 45) * brillo
+        const t = Math.min(1, dif)
+        const [lo, mi, hi] = tonos
+        const col = t < 0.5 ? [0, 1, 2].map((k) => lerp(lo[k], mi[k], t / 0.5)) : [0, 1, 2].map((k) => lerp(mi[k], hi[k], (t - 0.5) / 0.5))
+        const i = (py * W + px) * 4
+        const dith = (rnd() - 0.5) * 3
+        d[i] = col[0] + spec * 255 + dith; d[i + 1] = col[1] + spec * 255 + dith; d[i + 2] = col[2] + spec * 255 + dith; d[i + 3] = 255
+      }
+    }
+    x.putImageData(img, 0, 0)
+  }
+  satin('satin-claro', { seed: 7, angle: -0.55, escala: 1.5, tonos: [[150, 174, 228], [214, 226, 255], [246, 249, 255]], brillo: 0.4 })
+  satin('satin-cobalt', { seed: 13, angle: -0.6, escala: 1.4, tonos: [[10, 26, 110], [32, 66, 200], [92, 134, 250]], brillo: 0.38 })
+
+  // Glitter repetible: puntitos de distintos tamaños y brillos, con bordes que continúan
+  function glitter(id, cols, n, glints) {
+    const c = document.getElementById(id), x = c.getContext('2d'), W = 512
+    let seed = 3
+    const r = () => ((seed = (seed * 16807) % 2147483647) / 2147483647)
+    for (let i = 0; i < n; i++) {
+      const px = r() * W, py = r() * W, rad = r() < 0.92 ? r() * 0.9 + 0.25 : r() * 1.6 + 0.9
+      const a = 0.25 + r() * 0.75, col = cols[(r() * cols.length) | 0]
+      for (const [ox, oy] of [[0,0],[W,0],[-W,0],[0,W],[0,-W]]) {
+        x.beginPath(); x.arc(px + ox, py + oy, rad, 0, 7); x.fillStyle = `rgba(${col},${a})`; x.fill()
+      }
+    }
+    for (let i = 0; i < glints; i++) {
+      const px = 10 + r() * (W - 20), py = 10 + r() * (W - 20), s = 3 + r() * 7
+      const g = x.createRadialGradient(px, py, 0, px, py, s)
+      g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(1, 'rgba(255,255,255,0)')
+      x.fillStyle = g
+      x.fillRect(px - s, py - 0.6, s * 2, 1.2); x.fillRect(px - 0.6, py - s, 1.2, s * 2)
+      x.beginPath(); x.arc(px, py, 1.3, 0, 7); x.fillStyle = '#fff'; x.fill()
+    }
+  }
+  glitter('glitter', ['255,255,255', '214,228,255', '170,196,255', '235,240,255', '196,214,255'], 2600, 26)
+  glitter('glitter-azul', ['29,68,196', '79,124,240', '150,170,210', '255,255,255', '120,150,230'], 1500, 18)
+  // Foil holográfico: manchas pastel iridiscentes + vetas diagonales + grano
+  {
+    const c = document.getElementById('holo'), x = c.getContext('2d'), W = 1200, H = 600
+    let seed = 9
+    const r = () => ((seed = (seed * 16807) % 2147483647) / 2147483647)
+    x.fillStyle = '#e8eeff'; x.fillRect(0, 0, W, H)
+    const cols = ['#b9f0ff', '#d9c4ff', '#ffd1ec', '#c4d6ff', '#ffffff', '#a8c4ff', '#d4fff4', '#f1d9ff']
+    x.filter = 'blur(40px)'
+    for (let i = 0; i < 60; i++) {
+      x.beginPath(); x.ellipse(r() * W, r() * H, 60 + r() * 160, 30 + r() * 90, r() * 3, 0, 7)
+      x.fillStyle = cols[i % cols.length]; x.globalAlpha = 0.8; x.fill()
+    }
+    x.filter = 'blur(6px)'; x.globalAlpha = 0.5
+    for (let i = 0; i < 40; i++) {
+      const y0 = r() * H * 1.6 - H * 0.3
+      x.beginPath(); x.moveTo(-50, y0); x.lineTo(W + 50, y0 - W * 0.45)
+      x.lineWidth = 4 + r() * 18; x.strokeStyle = r() < 0.5 ? '#ffffff' : cols[(r() * cols.length) | 0]; x.stroke()
+    }
+    x.filter = 'none'; x.globalAlpha = 1
+    const img = x.getImageData(0, 0, W, H), d = img.data
+    for (let i = 0; i < d.length; i += 4) { const n = (r() - 0.5) * 18; d[i] += n; d[i + 1] += n; d[i + 2] += n }
+    x.putImageData(img, 0, 0)
+  }
+</script>
+</body>
+</html>

@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { motion, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform } from 'motion/react'
 import { CONFIG } from '../config'
 import { fechaLarga } from '../lib/fecha'
-import { Bow, Sparkle } from './Deco'
+import { Bow, Perlas, Sparkle } from './Deco'
 
 const spring = { type: 'spring', duration: 0.9, bounce: 0.35 }
 
@@ -76,6 +76,16 @@ export default function Hero({ abierto }) {
 
   return (
     <section ref={ref} className="relative flex min-h-[100dvh] items-center justify-center overflow-hidden px-4 pt-14 pb-20">
+      <motion.div
+        aria-hidden
+        initial={{ opacity: 0, y: -30 }}
+        animate={abierto ? { opacity: 1, y: 0 } : {}}
+        transition={{ type: 'spring', duration: 1.2, bounce: 0.45, delay: 0.3 }}
+        className="pointer-events-none absolute inset-x-0 -top-4 flex justify-center"
+      >
+        <Perlas className="w-[60vw] max-w-lg shrink-0" caida={56} n={14} k={1.7} />
+        <Perlas className="w-[60vw] max-w-lg shrink-0" caida={56} n={14} k={1.7} />
+      </motion.div>
       {DECO.map((d, i) => (
         <Flotante key={i} d={d} i={i} mx={mx} my={my} abierto={abierto} />
       ))}
@@ -89,7 +99,7 @@ export default function Hero({ abierto }) {
             initial={{ opacity: 0, scale: 0.7 }}
             animate={abierto ? { opacity: 1, scale: 1 } : {}}
             transition={{ type: 'spring', duration: 1.1, bounce: 0.4, delay: 0.15 }}
-            className="chrome font-display text-[clamp(12rem,58vw,22rem)] leading-none font-extrabold tracking-[-0.06em] select-none"
+            className="holo-text font-display text-[clamp(12rem,58vw,22rem)] leading-none font-extrabold tracking-[-0.06em] select-none"
           >
             XV
           </motion.span>
@@ -97,7 +107,7 @@ export default function Hero({ abierto }) {
             initial={{ opacity: 0, y: 40, rotate: -6, scale: 0.9 }}
             animate={abierto ? { opacity: 1, y: 0, rotate: -4, scale: 1 } : {}}
             transition={{ type: 'spring', duration: 1, bounce: 0.45, delay: 0.45 }}
-            className="absolute inset-x-0 top-1/2 -translate-y-1/2 pb-2 font-script text-[clamp(4.6rem,23vw,9.5rem)] leading-[1.1] text-cobalt drop-shadow-[0_4px_0_rgb(255_255_255)]"
+            className="absolute inset-x-0 top-1/2 -translate-y-1/2 pb-2 font-script text-[clamp(4.2rem,20vw,9.5rem)] whitespace-nowrap leading-[1.1] text-cobalt drop-shadow-[0_4px_0_rgb(255_255_255)]"
           >
             {CONFIG.nombre}
           </motion.h1>
