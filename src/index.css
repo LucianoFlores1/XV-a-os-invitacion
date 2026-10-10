@@ -382,3 +382,40 @@ input, textarea {
   0%, 62% { transform: translateX(-160%) skewX(-18deg); }
   100% { transform: translateX(380%) skewX(-18deg); }
 }
+
+/* ---------- Paneles de ancho completo ---------- */
+.panel {
+  isolation: isolate;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.7),
+    0 -26px 50px -24px rgb(18 41 125 / 0.45);
+}
+.satin-claro {
+  background: url('./texturas/satin-claro.jpg') center / cover, var(--color-paper);
+}
+.glitter-azul::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: url('./texturas/glitter-azul.png') 0 0 / 340px;
+  opacity: 0.4;
+  will-change: opacity;
+  animation: glitter-a 6s ease-in-out infinite;
+}
+.holo-bg {
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.35), rgb(255 255 255 / 0.15)),
+    url('./texturas/holo.jpg') center / cover;
+}
+
+/* Onda que late alrededor del pin del mapa */
+@keyframes pulso {
+  0% { transform: scale(0.8); opacity: 0.7; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+.pulso {
+  will-change: transform, opacity;
+  animation: pulso 2.4s var(--ease-out) infinite;
+}

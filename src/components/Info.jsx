@@ -1,10 +1,69 @@
-import { motion, useMotionValue, useSpring } from 'motion/react'
+import { motion } from 'motion/react'
 import { ArrowUpRight, BaseballCap, CalendarPlus, Check, CoatHanger, Dress, HighHeel, MapPin, SneakerMove, X } from '@phosphor-icons/react'
 import { CONFIG } from '../config'
 import { dia, diaSemana, googleCalendarUrl, mesNombre } from '../lib/fecha'
+import { blip } from '../lib/juice'
 import { Bow, Sparkle } from './Deco'
+import Panel from './Panel'
 import Reveal from './Reveal'
 
+// ---------- Fecha ----------
+export function Fecha() {
+  return (
+    <Panel tono="celeste">
+      <div className="mx-auto grid max-w-5xl items-center gap-8 md:grid-cols-2 md:gap-12">
+        <Reveal className="text-center md:text-left">
+          <h2 className="font-display text-[clamp(2.8rem,10vw,5rem)] leading-[0.95] font-extrabold tracking-tight text-ink">
+            Guardá <span className="font-script font-normal whitespace-nowrap text-cobalt">la fecha</span>
+          </h2>
+          <p className="mt-5 text-lg text-soft">
+            Te espero el <strong className="font-semibold text-ink">{diaSemana} {dia} de {mesNombre}</strong>
+            {CONFIG.hora && ` a las ${CONFIG.hora} h`}. Agendalo así no te lo perdés.
+          </p>
+          <a href={googleCalendarUrl()} target="_blank" rel="noreferrer" className="btn btn-primary mt-8 text-base">
+            <CalendarPlus size={20} weight="bold" />
+            Agendar en el calendario
+          </a>
+        </Reveal>
+        <Reveal delay={0.1} className="relative flex flex-col items-center text-center">
+          <Sparkle className="twinkle absolute top-6 right-[14%] size-7 text-cobalt/70" />
+          <Sparkle className="twinkle absolute bottom-16 left-[12%] size-5 text-cobalt/50" style={{ '--delay': '-1s' }} />
+          <p className="font-display text-2xl font-bold text-soft capitalize">{diaSemana}</p>
+          <p className="holo-text font-display text-[clamp(10rem,40vw,16rem)] leading-[0.9] font-extrabold tracking-[-0.05em]">{dia}</p>
+          <p className="font-script text-6xl text-cobalt">de {mesNombre}</p>
+        </Reveal>
+      </div>
+    </Panel>
+  )
+}
+
+// ---------- Lugar ----------
+export function Lugar() {
+  return (
+    <Panel tono="papel" className="text-center">
+      <Reveal className="mx-auto flex max-w-2xl flex-col items-center">
+        <div className="relative flex size-28 items-center justify-center">
+          <span aria-hidden className="pulso absolute inset-0 rounded-full bg-cobalt/20" />
+          <span aria-hidden className="pulso absolute inset-0 rounded-full bg-cobalt/20" style={{ animationDelay: '-1.2s' }} />
+          <span className="satin-cobalt relative flex size-20 items-center justify-center rounded-full text-white shadow-[0_14px_30px_-10px_rgb(29_68_196/0.7)]">
+            <MapPin size={38} weight="fill" />
+          </span>
+        </div>
+        <h2 className="mt-8 font-display text-[clamp(2.6rem,9vw,4.5rem)] leading-[0.95] font-extrabold tracking-tight text-ink">
+          ¿Dónde <span className="font-script font-normal text-cobalt">es?</span>
+        </h2>
+        <p className="mt-4 font-display text-2xl font-bold text-ink">{CONFIG.lugar || 'El lugar de la fiesta'}</p>
+        <p className="mt-2 max-w-sm text-lg text-balance text-soft">Tocá el botón y Google Maps te lleva directo a la puerta.</p>
+        <a href={CONFIG.mapsUrl} target="_blank" rel="noreferrer" className="btn btn-primary mt-8 text-base">
+          Cómo llegar
+          <ArrowUpRight size={18} weight="bold" />
+        </a>
+      </Reveal>
+    </Panel>
+  )
+}
+
+// ---------- Dress code ----------
 const PRENDAS = [
   { Icono: Dress, label: 'Vestido', ok: true },
   { Icono: CoatHanger, label: 'Camisa', ok: true },
@@ -16,121 +75,49 @@ const PRENDAS = [
 function Prenda({ p, i }) {
   return (
     <motion.li
-      initial={{ opacity: 0, y: 14, scale: 0.85 }}
+      initial={{ opacity: 0, y: 16, scale: 0.85 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true, amount: 0.6 }}
       transition={{ type: 'spring', duration: 0.6, bounce: 0.45, delay: 0.15 + i * 0.07 }}
       whileTap={{ scale: 0.9, rotate: p.ok ? -6 : 6 }}
-      className="flex flex-col items-center gap-2 text-center"
+      onTap={() => blip(p.ok)}
+      className="flex cursor-pointer flex-col items-center gap-2.5 text-center"
     >
       <span
-        className={`relative flex size-12 items-center justify-center rounded-2xl sm:size-14 ${
-          p.ok ? 'bg-cobalt/10 text-cobalt' : 'bg-ink/5 text-soft/70'
+        className={`relative flex size-14 items-center justify-center rounded-2xl sm:size-20 ${
+          p.ok ? 'bg-white text-cobalt shadow-[0_10px_24px_-10px_rgb(5_20_80/0.7)]' : 'bg-white/15 text-white/70 ring-1 ring-white/25'
         }`}
       >
-        <p.Icono size={28} weight={p.ok ? 'duotone' : 'regular'} />
-        {!p.ok && <span aria-hidden className="absolute h-[2px] w-10 rotate-[-35deg] rounded-full bg-[#c23b5a]/80" />}
+        <p.Icono className="size-8 sm:size-10" weight={p.ok ? 'duotone' : 'regular'} />
+        {!p.ok && <span aria-hidden className="absolute h-[2px] w-11 rotate-[-35deg] rounded-full bg-[#ff7a96] sm:w-14" />}
         <span
-          className={`absolute -right-1.5 -bottom-1.5 flex size-6 items-center justify-center rounded-full text-white ring-2 ring-white ${
-            p.ok ? 'bg-cobalt' : 'bg-[#c23b5a]'
+          className={`absolute -right-1.5 -bottom-1.5 flex size-6 items-center justify-center rounded-full text-white ring-2 sm:size-7 ${
+            p.ok ? 'bg-cobalt ring-white' : 'bg-[#d6416a] ring-white/90'
           }`}
         >
           {p.ok ? <Check size={13} weight="bold" /> : <X size={13} weight="bold" />}
         </span>
       </span>
-      <span className={`text-xs font-semibold ${p.ok ? 'text-ink' : 'text-soft'}`}>{p.label}</span>
+      <span className={`text-xs font-semibold sm:text-sm ${p.ok ? 'text-white' : 'text-white/70'}`}>{p.label}</span>
     </motion.li>
   )
 }
 
-// Tarjeta que se inclina levemente siguiendo el mouse (solo en compu)
-function Tilt({ children, className = '' }) {
-  const rx = useMotionValue(0)
-  const ry = useMotionValue(0)
-  const sx = useSpring(rx, { stiffness: 150, damping: 15 })
-  const sy = useSpring(ry, { stiffness: 150, damping: 15 })
+export function DressCode() {
   return (
-    <motion.div
-      onPointerMove={(e) => {
-        if (e.pointerType !== 'mouse') return
-        const r = e.currentTarget.getBoundingClientRect()
-        ry.set(((e.clientX - r.left) / r.width - 0.5) * 8)
-        rx.set(-((e.clientY - r.top) / r.height - 0.5) * 8)
-      }}
-      onPointerLeave={() => {
-        rx.set(0)
-        ry.set(0)
-      }}
-      style={{ rotateX: sx, rotateY: sy, transformPerspective: 900 }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  )
-}
-
-export default function Info() {
-  return (
-    <section className="px-4 py-24 md:py-32">
-      <div className="mx-auto max-w-5xl">
-        <Reveal>
-          <h2 className="font-display text-[clamp(2.6rem,9vw,4.5rem)] leading-[0.95] font-extrabold tracking-tight text-ink">
-            Guardá <span className="font-script font-normal text-cobalt">la fecha</span>
-          </h2>
-        </Reveal>
-
-        <div className="mt-10 grid gap-4 md:grid-cols-2 md:gap-5">
-          <Reveal className="md:row-span-2" rotate={-2}>
-            <Tilt className="paper-card paper-tex relative flex h-full flex-col items-center overflow-hidden p-8 text-center md:p-10">
-              <Sparkle className="twinkle absolute top-8 right-8 size-6 text-cobalt/70" />
-              <Sparkle className="twinkle absolute bottom-28 left-8 size-4 text-cobalt/50" style={{ '--delay': '-1s' }} />
-              <p className="font-display text-2xl font-bold text-soft capitalize">{diaSemana}</p>
-              <p className="holo-text my-2 font-display text-[clamp(9rem,34vw,13rem)] leading-[0.9] font-extrabold tracking-[-0.05em]">{dia}</p>
-              <p className="font-script text-6xl text-cobalt">de {mesNombre}</p>
-              {CONFIG.hora && <p className="mt-4 text-lg font-semibold text-ink">{CONFIG.hora} h</p>}
-              <a href={googleCalendarUrl()} target="_blank" rel="noreferrer" className="btn btn-soft mt-8 w-full">
-                <CalendarPlus size={20} weight="bold" />
-                Agendar en el calendario
-              </a>
-            </Tilt>
-          </Reveal>
-
-          <Reveal delay={0.08} rotate={2}>
-            <Tilt className="satin-cobalt glitter relative flex h-full flex-col overflow-hidden rounded-[28px] p-8 text-white shadow-[0_30px_60px_-30px_rgb(29_68_196/0.8)] md:p-10">
-              <div aria-hidden className="absolute -right-16 -bottom-16 size-64 rounded-full border-[28px] border-white/10" />
-              <div aria-hidden className="absolute -right-4 -bottom-4 size-40 rounded-full border-[18px] border-white/10" />
-              <span className="flex size-12 items-center justify-center rounded-full bg-white text-cobalt">
-                <MapPin size={24} weight="fill" />
-              </span>
-              <p className="mt-6 font-display text-3xl leading-tight font-bold md:text-4xl">{CONFIG.lugar || 'El lugar de la fiesta'}</p>
-              <p className="mt-2 max-w-xs text-white/80">Tocá el botón y Google Maps te lleva directo a la puerta.</p>
-              <a
-                href={CONFIG.mapsUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="btn relative mt-8 self-start bg-white px-6 py-3.5 text-cobalt shadow-[0_10px_20px_-8px_rgb(5_20_80/0.6)]"
-              >
-                Cómo llegar
-                <ArrowUpRight size={18} weight="bold" />
-              </a>
-            </Tilt>
-          </Reveal>
-
-          <Reveal delay={0.16} rotate={-1}>
-            <Tilt className="paper-card lino relative flex h-full flex-col overflow-hidden p-8 md:p-10">
-              <Bow className="absolute -top-2 right-6 w-20 rotate-12" />
-              <p className="text-sm font-semibold tracking-[0.2em] text-soft uppercase">Dress code</p>
-              <p className="mt-3 font-display text-4xl leading-none font-extrabold tracking-tight text-ink md:text-5xl">Elegante sport</p>
-              <p className="mt-3 max-w-xs text-soft">No se permite ropa deportiva ni gorras.</p>
-              <ul className="mt-6 grid grid-cols-5 gap-2" aria-label="Qué sí y qué no">
-                {PRENDAS.map((p, i) => (
-                  <Prenda key={p.label} p={p} i={i} />
-                ))}
-              </ul>
-            </Tilt>
-          </Reveal>
-        </div>
-      </div>
-    </section>
+    <Panel tono="cobalto" className="text-center">
+      <div aria-hidden className="damasco-blanco" />
+      <Reveal className="relative mx-auto max-w-3xl">
+        <Bow className="mx-auto w-24 [filter:drop-shadow(0_0_1.5px_white)_drop-shadow(0_8px_10px_rgb(5_15_70/0.4))]" />
+        <p className="mt-6 text-sm font-semibold tracking-[0.3em] text-baby uppercase">Dress code</p>
+        <h2 className="mt-2 font-display text-[clamp(3rem,12vw,6rem)] leading-[0.95] font-extrabold tracking-tight">Elegante sport</h2>
+        <p className="mt-4 text-lg text-white/85">No se permite ropa deportiva ni gorras.</p>
+        <ul className="mx-auto mt-10 grid max-w-xl grid-cols-5 gap-2 sm:gap-4" aria-label="Qué sí y qué no">
+          {PRENDAS.map((p, i) => (
+            <Prenda key={p.label} p={p} i={i} />
+          ))}
+        </ul>
+      </Reveal>
+    </Panel>
   )
 }

@@ -53,25 +53,88 @@ export function buzz(ms = 12) {
   }
 }
 
-// Sonido "pop/campanita" sintetizado, sin archivos
+// ---------- Sonidos sintetizados (sin archivos) ----------
+// Se silencian cuando la persona pausa la música.
 let ctx
-export function chime(nota = 880) {
+let mudo = false
+export function setMudo(v) {
+  mudo = v
+}
+function audio() {
+  if (mudo) return null
   try {
     ctx ||= new (window.AudioContext || window.webkitAudioContext)()
-    const t = ctx.currentTime
-    ;[1, 1.5].forEach((m, i) => {
-      const o = ctx.createOscillator()
-      const g = ctx.createGain()
-      o.type = 'sine'
-      o.frequency.setValueAtTime(nota * m, t + i * 0.06)
-      g.gain.setValueAtTime(0.0001, t + i * 0.06)
-      g.gain.exponentialRampToValueAtTime(0.12, t + i * 0.06 + 0.01)
-      g.gain.exponentialRampToValueAtTime(0.0001, t + i * 0.06 + 0.35)
-      o.connect(g).connect(ctx.destination)
-      o.start(t + i * 0.06)
-      o.stop(t + i * 0.06 + 0.4)
-    })
+    if (ctx.state === 'suspended') ctx.resume()
+    return ctx
   } catch {
-    // sin audio
+    return null
   }
+}
+
+function tono(c, { f, t = 0, dur = 0.3, vol = 0.12, tipo = 'sine', f2 }) {
+  const o = c.createOscillator()
+  const g = c.createGain()
+  const t0 = c.currentTime + t
+  o.type = tipo
+  o.frequency.setValueAtTime(f, t0)
+  if (f2) o.frequency.exponentialRampToValueAtTime(f2, t0 + dur * 0.8)
+  g.gain.setValueAtTime(0.0001, t0)
+  g.gain.exponentialRampToValueAtTime(vol, t0 + 0.008)
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur)
+  o.connect(g).connect(c.destination)
+  o.start(t0)
+  o.stop(t0 + dur + 0.05)
+}
+
+// campanita de dos notas
+export function chime(nota = 880) {
+  const c = audio()
+  if (!c) return
+  tono(c, { f: nota, dur: 0.4 })
+  tono(c, { f: nota * 1.5, t: 0.06, dur: 0.45, vol: 0.09 })
+}
+
+// pop corto para botones (con leve variación de tono para que no suene repetido)
+export function pop() {
+  const c = audio()
+  if (!c) return
+  const f = 520 + Math.random() * 120
+  tono(c, { f, f2: f * 1.9, dur: 0.09, vol: 0.09, tipo: 'triangle' })
+}
+
+// blip que sube o baja (contador de personas, sí/no)
+export function blip(sube = true) {
+  const c = audio()
+  if (!c) return
+  tono(c, { f: sube ? 660 : 520, f2: sube ? 990 : 390, dur: 0.12, vol: 0.08, tipo: 'triangle' })
+}
+
+// arpegio con brillo (confirmar, abrir la invitación)
+export function arpegio() {
+  const c = audio()
+  if (!c) return
+  ;[784, 988, 1175, 1568, 1976].forEach((f, i) => tono(c, { f, t: i * 0.07, dur: 0.5, vol: 0.08 }))
+}
+
+// whoosh de aire (se abre el sobre)
+export function whoosh() {
+  const c = audio()
+  if (!c) return
+  const dur = 0.7
+  const buf = c.createBuffer(1, c.sampleRate * dur, c.sampleRate)
+  const d = buf.getChannelData(0)
+  for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length)
+  const src = c.createBufferSource()
+  src.buffer = buf
+  const bp = c.createBiquadFilter()
+  bp.type = 'bandpass'
+  bp.Q.value = 1.2
+  bp.frequency.setValueAtTime(400, c.currentTime)
+  bp.frequency.exponentialRampToValueAtTime(3200, c.currentTime + dur)
+  const g = c.createGain()
+  g.gain.setValueAtTime(0.0001, c.currentTime)
+  g.gain.exponentialRampToValueAtTime(0.18, c.currentTime + 0.12)
+  g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + dur)
+  src.connect(bp).connect(g).connect(c.destination)
+  src.start()
 }

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { fechaEvento } from '../lib/fecha'
 import { Sparkle } from './Deco'
+import Panel from './Panel'
 import Reveal from './Reveal'
 
 function calcular() {
@@ -46,31 +47,27 @@ export default function Countdown() {
   }, [])
 
   return (
-    <section className="px-3 py-10 sm:px-6">
-      <div className="satin-cobalt glitter relative mx-auto max-w-5xl overflow-hidden rounded-[40px] px-5 py-16 text-center shadow-[0_40px_80px_-40px_rgb(29_68_196/0.8)] sm:px-10 md:py-20">
-        <div aria-hidden className="damasco-blanco" />
-        {[
-          ['8%', '14%', 18],
-          ['90%', '20%', 12],
-          ['85%', '80%', 20],
-          ['6%', '84%', 14],
-        ].map(([x, y, s], i) => (
-          <Sparkle key={i} className="twinkle absolute text-white/80" style={{ left: x, top: y, width: s, height: s, '--delay': `${-i * 0.6}s` }} />
-        ))}
-        <Reveal>
-          <h2 className="pb-2 font-script text-[clamp(3.2rem,12vw,5.5rem)] leading-[1.1] text-white">
-            {t.fin ? '¡Llegó el día!' : 'Falta muy poquito'}
-          </h2>
-        </Reveal>
-        {!t.fin && (
-          <div className="mx-auto mt-8 grid max-w-3xl grid-cols-4 gap-2.5 sm:gap-5">
-            <Tile i={0} n={t.dias} label={t.dias === 1 ? 'día' : 'días'} />
-            <Tile i={1} n={t.horas} label="horas" />
-            <Tile i={2} n={t.minutos} label="min" />
-            <Tile i={3} n={t.segundos} label="seg" />
-          </div>
-        )}
-      </div>
-    </section>
+    <Panel tono="cobalto" className="text-center">
+      <div aria-hidden className="damasco-blanco" />
+      {[
+        ['8%', '12%', 18],
+        ['90%', '18%', 12],
+        ['86%', '78%', 20],
+        ['6%', '82%', 14],
+      ].map(([x, y, s], i) => (
+        <Sparkle key={i} className="twinkle absolute text-white/80" style={{ left: x, top: y, width: s, height: s, '--delay': `${-i * 0.6}s` }} />
+      ))}
+      <Reveal>
+        <h2 className="pb-2 font-script text-[clamp(3.4rem,13vw,6rem)] leading-[1.1] text-white">{t.fin ? '¡Llegó el día!' : 'Falta muy poquito'}</h2>
+      </Reveal>
+      {!t.fin && (
+        <div className="mx-auto mt-10 grid max-w-3xl grid-cols-4 gap-2.5 sm:gap-5">
+          <Tile i={0} n={t.dias} label={t.dias === 1 ? 'día' : 'días'} />
+          <Tile i={1} n={t.horas} label="horas" />
+          <Tile i={2} n={t.minutos} label="min" />
+          <Tile i={3} n={t.segundos} label="seg" />
+        </div>
+      )}
+    </Panel>
   )
 }

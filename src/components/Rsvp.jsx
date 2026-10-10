@@ -3,8 +3,9 @@ import { AnimatePresence, motion } from 'motion/react'
 import confetti from 'canvas-confetti'
 import { Minus, Plus, WhatsappLogo } from '@phosphor-icons/react'
 import { CONFIG } from '../config'
-import { buzz, chime } from '../lib/juice'
+import { arpegio, blip, buzz } from '../lib/juice'
 import { Bow, Perlas } from './Deco'
+import Panel from './Panel'
 import Reveal from './Reveal'
 
 const ease = [0.23, 1, 0.32, 1]
@@ -47,7 +48,7 @@ export default function Rsvp() {
     setEnviado(true)
     if (voy) {
       buzz(25)
-      chime(784)
+      arpegio()
       const opts = {
         particleCount: 110,
         spread: 80,
@@ -62,7 +63,8 @@ export default function Rsvp() {
   }
 
   return (
-    <section id="confirmar" className="scroll-mt-6 px-4 py-24 md:py-32">
+    <Panel tono="cobalto" id="confirmar" className="pt-32 md:pt-40">
+      <div aria-hidden className="damasco-blanco" />
       <Reveal className="relative mx-auto max-w-xl">
         <Perlas className="absolute top-0 left-1/2 z-10 w-[94%] -translate-x-1/2" caida={50} />
         <Bow className="absolute -top-14 left-1/2 z-10 w-32 -translate-x-1/2 drop-shadow-[0_10px_12px_rgb(29_68_196/0.3)]" />
@@ -142,9 +144,11 @@ export default function Rsvp() {
                           key={txt}
                           type="button"
                           aria-pressed={voy === v}
+                          data-sonido
                           onClick={() => {
                             setVoy(v)
                             buzz(8)
+                            blip(v)
                           }}
                           className={`relative rounded-full py-3 font-semibold transition-colors duration-200 ${voy === v ? 'text-white' : 'text-cobalt'}`}
                         >
@@ -168,7 +172,7 @@ export default function Rsvp() {
                             ¿Cuántos van, contándote?
                           </span>
                           <div className="flex items-center gap-1 rounded-full bg-paper p-1 shadow-[inset_0_0_0_1.5px_rgb(29_68_196/0.15)]" role="group" aria-labelledby="personas-label">
-                            <button type="button" onClick={() => setPersonas((n) => Math.max(1, n - 1))} aria-label="Menos" disabled={personas <= 1} className="btn size-10 bg-white text-cobalt disabled:opacity-40">
+                            <button type="button" data-sonido onClick={() => { setPersonas((n) => Math.max(1, n - 1)); blip(false) }} aria-label="Menos" disabled={personas <= 1} className="btn size-10 bg-white text-cobalt disabled:opacity-40">
                               <Minus size={16} weight="bold" />
                             </button>
                             <AnimatePresence mode="popLayout" initial={false}>
@@ -184,7 +188,7 @@ export default function Rsvp() {
                                 {personas}
                               </motion.span>
                             </AnimatePresence>
-                            <button type="button" onClick={() => setPersonas((n) => Math.min(10, n + 1))} aria-label="Más" className="btn size-10 bg-white text-cobalt">
+                            <button type="button" data-sonido onClick={() => { setPersonas((n) => Math.min(10, n + 1)); blip(true) }} aria-label="Más" className="btn size-10 bg-white text-cobalt">
                               <Plus size={16} weight="bold" />
                             </button>
                           </div>
@@ -201,7 +205,7 @@ export default function Rsvp() {
                   </div>
 
 
-                  <button type="submit" className="btn btn-primary mt-1 w-full py-4 text-lg">
+                  <button type="submit" data-sonido className="btn btn-primary mt-1 w-full py-4 text-lg">
                     <WhatsappLogo size={24} weight="fill" />
                     Confirmar por WhatsApp
                   </button>
@@ -211,6 +215,6 @@ export default function Rsvp() {
           </div>
         </div>
       </Reveal>
-    </section>
+    </Panel>
   )
 }

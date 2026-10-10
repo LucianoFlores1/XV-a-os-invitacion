@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { CONFIG } from '../config'
 import { buscarTemas } from './itunes'
+import { setMudo } from './juice'
 
 const MusicCtx = createContext(null)
 
@@ -94,6 +95,8 @@ export function MusicProvider({ children }) {
       wantRadio.current = false
       a.pause()
     }
+    // si pausan la música, también se silencian los efectos de sonido
+    setMudo(!wantRadio.current)
   }, [previewId])
 
   // Pausa la radio (por ejemplo cuando tocan play dentro de Spotify)

@@ -4,6 +4,7 @@ import { ArrowUpRight, SpotifyLogo } from '@phosphor-icons/react'
 import { CONFIG } from '../config'
 import { useMusic } from '../lib/music'
 import { Sparkle } from './Deco'
+import Panel from './Panel'
 import Reveal from './Reveal'
 
 function playlistId(url) {
@@ -44,7 +45,7 @@ export default function Musica() {
   }, [pause])
 
   return (
-    <section id="musica" className="scroll-mt-4 px-4 py-24 md:py-32">
+    <Panel tono="celeste" id="musica">
       <div className="mx-auto max-w-5xl">
         <Reveal className="text-center">
           <h2 className="font-display text-[clamp(2.6rem,9vw,4.5rem)] leading-[0.95] font-extrabold tracking-tight text-ink">
@@ -89,6 +90,6 @@ export default function Musica() {
           </Reveal>
         </div>
       </div>
-    </section>
+    </Panel>
   )
 }

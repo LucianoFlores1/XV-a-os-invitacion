@@ -4,6 +4,7 @@ import { Check, Copy } from '@phosphor-icons/react'
 import { CONFIG } from '../config'
 import { buzz, chime, sparkleFrom } from '../lib/juice'
 import { Bow, Sparkle } from './Deco'
+import Panel from './Panel'
 import Reveal from './Reveal'
 
 async function copiar(texto) {
@@ -43,7 +44,7 @@ export default function Regalo() {
   }
 
   return (
-    <section className="px-4 py-24 md:py-28">
+    <Panel tono="holo">
       <Reveal className="relative mx-auto max-w-xl" rotate={-1.5}>
         <div className="overflow-hidden rounded-[30px] shadow-[0_40px_70px_-35px_rgb(29_68_196/0.6)]">
           {/* tapa */}
@@ -57,12 +58,13 @@ export default function Regalo() {
             <div className="relative">
               <p className="font-script text-[clamp(2.8rem,10vw,3.8rem)] leading-[1.1] text-cobalt">Tu presencia es mi mayor regalo</p>
               <p className="mx-auto mt-5 max-w-sm text-lg text-balance text-soft">
-                Si pensás en un obsequio, en la entrada habrá un cofre. O si preferís, te dejo mi alias:
+                Si pensás en un obsequio, te dejo mi alias:
               </p>
               <motion.button
                 ref={boton}
                 type="button"
                 onClick={onCopiar}
+                data-sonido
                 whileTap={{ scale: 0.95 }}
                 aria-label={`Copiar alias ${CONFIG.alias}`}
                 className="group mt-7 inline-flex items-center gap-3 rounded-full bg-white py-2 pr-2 pl-6 shadow-[inset_0_0_0_1.5px_rgb(29_68_196/0.25),0_12px_24px_-12px_rgb(29_68_196/0.6)]"
@@ -91,6 +93,6 @@ export default function Regalo() {
         <Sparkle className="twinkle absolute -top-3 right-6 size-6 text-cobalt/70" />
         <Sparkle className="twinkle absolute bottom-10 -left-2 size-5 text-cobalt/60" style={{ '--delay': '-1s' }} />
       </Reveal>
-    </section>
+    </Panel>
   )
 }

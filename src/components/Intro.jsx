@@ -3,7 +3,7 @@ import confetti from 'canvas-confetti'
 import { animate, AnimatePresence, motion, useMotionTemplate, useMotionValue, useReducedMotion } from 'motion/react'
 import { CONFIG } from '../config'
 import { fechaLarga } from '../lib/fecha'
-import { buzz, chime, sparkleFrom } from '../lib/juice'
+import { arpegio, buzz, chime, sparkleFrom, whoosh } from '../lib/juice'
 import { Bow, Sparkle } from './Deco'
 
 const ease = [0.23, 1, 0.32, 1]
@@ -43,6 +43,7 @@ export default function Intro({ onOpen }) {
     if (fase !== 'cerrado') return
     buzz(18)
     chime(988)
+    setTimeout(whoosh, 250)
     if (sello.current) sparkleFrom(sello.current, { count: 14, spread: 110, size: 18 })
     setFase('abriendo')
     if (reduce) {
@@ -63,6 +64,7 @@ export default function Intro({ onOpen }) {
       animate(r, max, { duration: 0.95, ease: easeInOut }).then(() => setVisible(false))
       // lluvia de estrellitas cuando se abre la página
       setTimeout(() => {
+        arpegio()
         const base = { spread: 70, startVelocity: 38, gravity: 0.7, ticks: 260, scalar: 1.1, shapes: ['star'], colors: ['#1d44c4', '#4f7cf0', '#9dbcff', '#ffffff'], disableForReducedMotion: true }
         confetti({ ...base, particleCount: 45, angle: 60, origin: { x: 0, y: 0.6 } })
         confetti({ ...base, particleCount: 45, angle: 120, origin: { x: 1, y: 0.6 } })

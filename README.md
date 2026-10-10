@@ -11,10 +11,11 @@ Estética clara y luminosa con texturas: fondo de satén celeste con glitter azu
 - **Cinta** azul con el nombre y la fecha, un mensaje en tarjeta con borde de puntilla y una **cuenta regresiva**.
 - **Guardá la fecha**: día, botón para agendar, "Cómo llegar" a Google Maps y dress code (elegante sport, sin ropa deportiva ni gorras).
 - **Poné tu tema**: la playlist pública de Spotify de la fiesta, embebida, con un botón para abrirla y sumar canciones. Si tocan play ahí, la música de fondo se pausa sola.
-- **Regalo**: "Tu presencia es mi mayor regalo", el cofre en la entrada y el alias con botón para copiarlo.
+- **Regalo**: "Tu presencia es mi mayor regalo" y el alias con botón para copiarlo.
 - **Confirmá tu asistencia**: abre WhatsApp (+54 9 387 482-4080) con el mensaje listo.
 - **Cierre**: "Con amor, María Luz".
-- Cada toque deja brillitos, y en Android vibra suave.
+- Cada sección es un panel de ancho completo con su textura (papel, satén azul, satén celeste u holográfico) y puntas superiores redondeadas que se apilan.
+- Cada toque deja brillitos, en Android vibra suave y hay sonidos sintetizados (pop en botones, campanita al copiar, arpegio al confirmar, whoosh al abrir el sobre). Si se pausa la música, también se silencian.
 
 ## Editar datos
 
