@@ -19,11 +19,11 @@ export function ToastProvider({ children }) {
           {toast && (
             <motion.div
               key={toast.id}
-              initial={{ opacity: 0, y: -12, scale: 0.96 }}
+              initial={{ opacity: 0, y: -16, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.98 }}
-              transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
-              className="rounded-full border border-line bg-night-2/90 px-5 py-3 text-sm text-ink shadow-xl backdrop-blur-md"
+              transition={{ type: 'spring', duration: 0.45, bounce: 0.4 }}
+              className="rounded-full bg-cobalt px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_-10px_rgb(29_68_196/0.7)]"
             >
               {toast.text}
             </motion.div>

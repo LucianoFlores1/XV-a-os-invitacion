@@ -1,28 +1,41 @@
-import { useState } from 'react'
-import { motion } from 'motion/react'
+import { useEffect, useState } from 'react'
 import { CONFIG } from './config'
-import { dia, mes, anio } from './lib/fecha'
+import { anio, dia, mes } from './lib/fecha'
+import { sparkle } from './lib/juice'
 import { MusicProvider, useMusic } from './lib/music'
 import { ToastProvider } from './lib/toast'
-import Sky from './components/Sky'
 import Intro from './components/Intro'
 import Hero from './components/Hero'
-import Phrase from './components/Phrase'
+import Marquee from './components/Marquee'
+import Mensaje from './components/Mensaje'
 import Countdown from './components/Countdown'
-import Details from './components/Details'
-import DressCode from './components/DressCode'
-import Night from './components/Night'
-import Rocola from './components/Rocola'
+import Info from './components/Info'
+import Musica from './components/Musica'
 import Rsvp from './components/Rsvp'
 import MusicButton from './components/MusicButton'
+import Reveal from './components/Reveal'
+import { Bow } from './components/Deco'
+
+// Cada toque en la página deja unos brillitos
+function useTapSparkles(activo) {
+  useEffect(() => {
+    if (!activo) return
+    const fn = (e) => {
+      if (e.target.closest('input, textarea, iframe')) return
+      sparkle(e.clientX, e.clientY, { count: 6, spread: 34, size: 11 })
+    }
+    window.addEventListener('pointerdown', fn)
+    return () => window.removeEventListener('pointerdown', fn)
+  }, [activo])
+}
 
 function Pagina() {
   const [abierto, setAbierto] = useState(false)
   const { start } = useMusic()
+  useTapSparkles(abierto)
 
   return (
     <>
-      <Sky />
       <Intro
         onOpen={() => {
           start()
@@ -32,28 +45,22 @@ function Pagina() {
       <MusicButton visible={abierto} />
       <main>
         <Hero abierto={abierto} />
-        <Phrase />
+        <Marquee />
+        <Mensaje />
         <Countdown />
-        <Details />
-        <DressCode />
-        <Night />
-        <Rocola />
+        <Info />
+        <Musica />
         <Rsvp />
       </main>
-      <footer className="px-4 pt-10 pb-28 text-center">
-        <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-          className="font-serif text-2xl text-mist italic"
-        >
-          Gracias por ser parte de este sueño.
-        </motion.p>
-        <p className="mt-3 font-script text-6xl text-ink">{CONFIG.nombre}</p>
-        <p className="mt-4 text-sm tracking-[0.2em] text-mist">
-          {String(dia).padStart(2, '0')}.{String(mes).padStart(2, '0')}.{anio}
-        </p>
+      <footer className="px-4 pt-6 pb-32 text-center">
+        <Reveal>
+          <Bow className="mx-auto w-20" />
+          <p className="mt-4 font-display text-2xl font-bold text-ink">¡Te espero!</p>
+          <p className="mt-1 font-script text-7xl text-cobalt">{CONFIG.nombre}</p>
+          <p className="mt-3 text-sm font-semibold tracking-[0.25em] text-soft">
+            {String(dia).padStart(2, '0')} . {String(mes).padStart(2, '0')} . {anio}
+          </p>
+        </Reveal>
       </footer>
     </>
   )

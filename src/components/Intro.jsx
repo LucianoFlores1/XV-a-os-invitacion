@@ -1,16 +1,37 @@
-import { useEffect, useState } from 'react'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { useEffect, useRef, useState } from 'react'
+import { animate, AnimatePresence, motion, useMotionTemplate, useMotionValue, useReducedMotion } from 'motion/react'
 import { CONFIG } from '../config'
 import { fechaLarga } from '../lib/fecha'
+import { buzz, chime, sparkleFrom } from '../lib/juice'
+import { Bow, Sparkle } from './Deco'
 
 const ease = [0.23, 1, 0.32, 1]
+const easeInOut = [0.77, 0, 0.175, 1]
 
-// Sobre de entrada: al tocarlo se abre la solapa, sube la tarjeta y arranca la música.
+const BRILLOS = [
+  { x: '12%', y: '18%', s: 18, d: 2.4 },
+  { x: '82%', y: '14%', s: 12, d: 3.1 },
+  { x: '88%', y: '62%', s: 20, d: 2.8 },
+  { x: '8%', y: '70%', s: 14, d: 3.4 },
+  { x: '30%', y: '86%', s: 10, d: 2.2 },
+  { x: '68%', y: '88%', s: 16, d: 2.9 },
+  { x: '50%', y: '9%', s: 9, d: 3.6 },
+]
+
+// Sobre de entrada. Al tocarlo: brillos, se abre la solapa, sale la tarjeta
+// y el papel se expande en círculo desde la tarjeta hasta revelar la invitación.
 export default function Intro({ onOpen }) {
-  const [abriendo, setAbriendo] = useState(false)
+  const [fase, setFase] = useState('cerrado') // cerrado | abriendo | revelando
   const [visible, setVisible] = useState(true)
   const [solapaAtras, setSolapaAtras] = useState(false)
   const reduce = useReducedMotion()
+  const sello = useRef(null)
+  const tarjeta = useRef(null)
+
+  const r = useMotionValue(0)
+  const cx = useMotionValue(0)
+  const cy = useMotionValue(0)
+  const mask = useMotionTemplate`radial-gradient(circle at ${cx}px ${cy}px, transparent ${r}px, #000 calc(${r}px + 2px))`
 
   useEffect(() => {
     document.body.classList.toggle('locked', visible)
@@ -18,29 +39,55 @@ export default function Intro({ onOpen }) {
   }, [visible])
 
   function abrir() {
-    if (abriendo) return
-    setAbriendo(true)
-    onOpen()
-    setTimeout(() => setSolapaAtras(true), 300)
-    setTimeout(() => setVisible(false), reduce ? 50 : 1500)
+    if (fase !== 'cerrado') return
+    buzz(18)
+    chime(988)
+    if (sello.current) sparkleFrom(sello.current, { count: 14, spread: 110, size: 18 })
+    setFase('abriendo')
+    if (reduce) {
+      onOpen()
+      setTimeout(() => setVisible(false), 150)
+      return
+    }
+    setTimeout(() => setSolapaAtras(true), 280)
+    setTimeout(() => {
+      const b = tarjeta.current.getBoundingClientRect()
+      const x = b.left + b.width / 2
+      const y = b.top + b.height / 2
+      cx.set(x)
+      cy.set(y)
+      const max = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y)) + 20
+      setFase('revelando')
+      onOpen()
+      animate(r, max, { duration: 0.95, ease: easeInOut }).then(() => setVisible(false))
+    }, 1150)
   }
+
+  const abierto = fase !== 'cerrado'
 
   return (
     <AnimatePresence>
       {visible && (
         <motion.div
           key="intro"
-          exit={{ opacity: 0, scale: 1.04 }}
-          transition={{ duration: 0.6, ease }}
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-10 bg-night px-6"
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          style={fase === 'revelando' ? { WebkitMaskImage: mask, maskImage: mask } : undefined}
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-10 overflow-hidden bg-[radial-gradient(90%_60%_at_50%_40%,#3d6be6_0%,#1d44c4_45%,#142f94_100%)] px-6"
         >
-          <div aria-hidden className="absolute inset-0 bg-[radial-gradient(60%_45%_at_50%_45%,rgb(46_92_190/0.5),transparent_75%)]" />
+          {BRILLOS.map((b, i) => (
+            <Sparkle
+              key={i}
+              className="twinkle absolute text-white"
+              style={{ left: b.x, top: b.y, width: b.s, height: b.s, '--d': `${b.d}s`, '--delay': `${-i * 0.4}s` }}
+            />
+          ))}
 
           <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: abriendo ? 0 : 1, y: 0 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: abierto ? 0 : 1, y: 0 }}
             transition={{ duration: 0.5, ease }}
-            className="relative font-serif text-2xl italic text-mist"
+            className="relative font-script text-5xl text-white"
           >
             Tenés una invitación
           </motion.p>
@@ -49,53 +96,64 @@ export default function Intro({ onOpen }) {
             type="button"
             onClick={abrir}
             aria-label="Abrir la invitación"
-            initial={{ opacity: 0, y: 24, scale: 0.94 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.7, ease, delay: 0.15 }}
-            whileTap={{ scale: 0.97 }}
+            initial={{ opacity: 0, y: 40, scale: 0.9, rotate: -4 }}
+            animate={
+              abierto
+                ? { opacity: 1, y: 40, scale: 1, rotate: 0 }
+                : { opacity: 1, y: [0, -8, 0], scale: 1, rotate: [-2, 2, -2] }
+            }
+            transition={
+              abierto
+                ? { type: 'spring', duration: 0.6, bounce: 0.35 }
+                : { opacity: { duration: 0.6 }, scale: { type: 'spring', duration: 0.8, bounce: 0.4 }, y: { duration: 3.2, repeat: Infinity, ease: 'easeInOut' }, rotate: { duration: 4.4, repeat: Infinity, ease: 'easeInOut' } }
+            }
+            whileTap={{ scale: 0.94 }}
             className="relative aspect-[3/2] w-[min(84vw,380px)] [perspective:1200px]"
           >
             {/* tarjeta interior */}
             <motion.div
-              animate={abriendo ? { y: '-46%' } : { y: '0%' }}
-              transition={{ duration: 0.8, ease, delay: abriendo ? 0.45 : 0 }}
-              className="absolute inset-x-[6%] top-[8%] bottom-[6%] flex flex-col items-center justify-center rounded-xl bg-[linear-gradient(180deg,#f3f6fd,#dbe5f7)] text-deep"
+              ref={tarjeta}
+              animate={abierto ? { y: '-58%' } : { y: '0%' }}
+              transition={{ type: 'spring', duration: 0.8, bounce: 0.25, delay: abierto ? 0.4 : 0 }}
+              className="absolute inset-x-[6%] top-[6%] bottom-[8%] flex flex-col items-center justify-center rounded-xl bg-[linear-gradient(180deg,#ffffff,#eef4ff)] text-cobalt shadow-[0_10px_30px_-10px_rgb(10_30_100/0.5)]"
             >
-              <span className="font-script text-4xl leading-tight">{CONFIG.nombre}</span>
-              <span className="text-xs tracking-[0.3em] uppercase">Mis XV</span>
+              <span className="text-[10px] font-semibold tracking-[0.4em] text-cobalt/70 uppercase">Mis XV</span>
+              <span className="font-script text-5xl leading-tight">{CONFIG.nombre}</span>
             </motion.div>
 
             {/* cuerpo del sobre */}
-            <div className="absolute inset-0 overflow-hidden rounded-2xl bg-[linear-gradient(160deg,#1a3a85,#0f2357)] shadow-[0_30px_80px_-20px_rgb(0_0_0/0.7)]">
-              <div className="absolute inset-0 bg-[linear-gradient(to_top_right,#16337a_50%,transparent_50%),linear-gradient(to_top_left,#16337a_50%,transparent_50%)] bg-[length:50%_100%] bg-[position:left_bottom,right_bottom] bg-no-repeat" />
+            <div className="absolute inset-0 overflow-hidden rounded-2xl bg-[linear-gradient(160deg,#f7faff,#d9e5ff)] shadow-[0_40px_80px_-20px_rgb(5_15_70/0.7)]">
+              <div className="absolute inset-0 bg-[linear-gradient(to_top_right,#e3ecff_50%,transparent_50%),linear-gradient(to_top_left,#dbe6ff_50%,transparent_50%)] bg-[length:50%_100%] bg-[position:left_bottom,right_bottom] bg-no-repeat" />
+              <div className="absolute inset-0 shadow-[inset_0_0_0_1px_rgb(255_255_255/0.8)]" />
             </div>
 
             {/* solapa */}
             <motion.div
-              animate={{ rotateX: abriendo ? 180 : 0 }}
-              transition={{ duration: 0.6, ease: [0.77, 0, 0.175, 1] }}
-              style={{ transformOrigin: 'top', clipPath: 'polygon(0 0, 100% 0, 50% 62%)', zIndex: solapaAtras ? -1 : 2 }}
-              className="absolute inset-x-0 top-0 h-full rounded-t-2xl bg-[linear-gradient(180deg,#24479a,#1a3a85)]"
+              animate={{ rotateX: abierto ? 180 : 0 }}
+              transition={{ duration: 0.55, ease: easeInOut }}
+              style={{ transformOrigin: 'top', clipPath: 'polygon(0 0, 100% 0, 50% 64%)', zIndex: solapaAtras ? -1 : 2 }}
+              className="absolute inset-x-0 top-0 h-full rounded-t-2xl bg-[linear-gradient(180deg,#ffffff,#e4edff)] shadow-[0_2px_0_rgb(29_68_196/0.08)]"
             />
 
-            {/* sello */}
+            {/* moño */}
             <motion.span
-              animate={abriendo ? { opacity: 0, scale: 0.9 } : { opacity: 1, scale: 1 }}
-              transition={{ duration: 0.25, ease }}
-              className="absolute left-1/2 top-[58%] z-10 flex size-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[radial-gradient(circle_at_35%_30%,#dbe7ff,#9cc3ff_55%,#6f9be6)] font-script text-2xl text-deep shadow-[0_6px_18px_rgb(0_0_0/0.45),inset_0_-3px_6px_rgb(18_42_99/0.35)]"
+              ref={sello}
+              animate={abierto ? { opacity: 0, scale: 0.6, y: -10 } : { opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.3, ease }}
+              className="absolute left-1/2 top-[60%] z-10 w-28 -translate-x-1/2 -translate-y-1/2 drop-shadow-[0_8px_10px_rgb(10_30_100/0.35)]"
             >
-              {CONFIG.iniciales}
+              <Bow className="w-full" />
             </motion.span>
           </motion.button>
 
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: abriendo ? 0 : 1 }}
-            transition={{ duration: 0.5, delay: abriendo ? 0 : 0.5 }}
-            className="relative flex flex-col items-center gap-2 text-center"
+            animate={{ opacity: abierto ? 0 : 1 }}
+            transition={{ duration: 0.4, delay: abierto ? 0 : 0.6 }}
+            className="relative flex flex-col items-center gap-1.5 text-center text-white"
           >
-            <span className="text-sm text-mist">Tocá el sobre para abrirla</span>
-            <span className="text-xs text-mist/70">{fechaLarga} · con música</span>
+            <span className="text-base font-medium">Tocá el sobre para abrirla</span>
+            <span className="text-sm text-white/75">{fechaLarga} · subí el volumen</span>
           </motion.div>
         </motion.div>
       )}

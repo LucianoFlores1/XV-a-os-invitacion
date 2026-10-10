@@ -1,113 +1,126 @@
-import { useRef, useState } from 'react'
-import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
-import { Sparkle } from '@phosphor-icons/react'
-import { CONFIG, deseos } from '../config'
+import { useEffect, useRef } from 'react'
+import { motion, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform } from 'motion/react'
+import { CONFIG } from '../config'
 import { fechaLarga } from '../lib/fecha'
-import { useToast } from '../lib/toast'
+import { Bow, Sparkle } from './Deco'
 
-const ease = [0.23, 1, 0.32, 1]
+const spring = { type: 'spring', duration: 0.9, bounce: 0.35 }
 
-function Letras({ texto, delay = 0, abierto }) {
+// Decoración flotante. "p" es cuánto se mueve con el dedo o el mouse (profundidad).
+const DECO = [
+  { tipo: 'bow', x: '8%', y: '16%', w: 70, r: -18, p: 26 },
+  { tipo: 'bow', x: '80%', y: '70%', w: 86, r: 14, p: 34 },
+  { tipo: 'star', x: '84%', y: '14%', w: 26, p: 18 },
+  { tipo: 'star', x: '14%', y: '74%', w: 20, p: 14 },
+  { tipo: 'star', x: '70%', y: '30%', w: 12, p: 10 },
+  { tipo: 'star', x: '24%', y: '40%', w: 10, p: 8 },
+  { tipo: 'star', x: '58%', y: '86%', w: 16, p: 20 },
+]
+
+function Flotante({ d, mx, my, abierto, i }) {
+  const x = useTransform(mx, (v) => v * d.p)
+  const y = useTransform(my, (v) => v * d.p)
   return (
-    <span aria-label={texto} className="inline-block">
-      {[...texto].map((c, i) => (
-        <motion.span
-          aria-hidden
-          key={i}
-          className="inline-block"
-          initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
-          animate={abierto ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
-          transition={{ duration: 0.9, ease, delay: delay + i * 0.05 }}
-        >
-          {c === ' ' ? ' ' : c}
-        </motion.span>
-      ))}
-    </span>
+    <motion.div style={{ left: d.x, top: d.y, x, y }} className="pointer-events-none absolute">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.6 }}
+        animate={abierto ? { opacity: 1, scale: 1 } : {}}
+        transition={{ ...spring, delay: 0.5 + i * 0.07 }}
+      >
+        {d.tipo === 'bow' ? (
+          <Bow className="float drop-shadow-[0_10px_14px_rgb(29_68_196/0.25)]" style={{ width: d.w, '--r': `${d.r}deg`, '--d': '6s', '--delay': `${-i}s` }} />
+        ) : (
+          <Sparkle className="twinkle text-cobalt/80" style={{ width: d.w, height: d.w, '--d': `${2.2 + i * 0.3}s`, '--delay': `${-i * 0.5}s` }} />
+        )}
+      </motion.div>
+    </motion.div>
   )
 }
 
 export default function Hero({ abierto }) {
   const ref = useRef(null)
   const reduce = useReducedMotion()
-  const toast = useToast()
-  const [estrellas, setEstrellas] = useState([])
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
-  const scale = useTransform(scrollYProgress, [0, 1], [1, reduce ? 1 : 0.82])
-  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0])
-  const y = useTransform(scrollYProgress, [0, 1], ['0%', reduce ? '0%' : '18%'])
+  const rawX = useMotionValue(0)
+  const rawY = useMotionValue(0)
+  const mx = useSpring(rawX, { stiffness: 60, damping: 14 })
+  const my = useSpring(rawY, { stiffness: 60, damping: 14 })
 
-  function pedirDeseo() {
-    const id = Date.now()
-    const top = 10 + Math.random() * 30
-    setEstrellas((e) => [...e, { id, top }])
-    setTimeout(() => setEstrellas((e) => e.filter((s) => s.id !== id)), 1400)
-    toast(deseos[Math.floor(Math.random() * deseos.length)])
-  }
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
+  const xvY = useTransform(scrollYProgress, [0, 1], ['0%', reduce ? '0%' : '30%'])
+  const xvRot = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : -6])
+
+  useEffect(() => {
+    if (reduce) return
+    const move = (e) => {
+      rawX.set(e.clientX / innerWidth - 0.5)
+      rawY.set(e.clientY / innerHeight - 0.5)
+    }
+    const tilt = (e) => {
+      if (e.gamma == null) return
+      rawX.set(Math.max(-0.5, Math.min(0.5, e.gamma / 60)))
+      rawY.set(Math.max(-0.5, Math.min(0.5, (e.beta - 45) / 60)))
+    }
+    window.addEventListener('pointermove', move)
+    window.addEventListener('deviceorientation', tilt)
+    return () => {
+      window.removeEventListener('pointermove', move)
+      window.removeEventListener('deviceorientation', tilt)
+    }
+  }, [reduce, rawX, rawY])
+
+  const aparece = (delay) => ({
+    initial: { opacity: 0, y: 30, scale: 0.96 },
+    animate: abierto ? { opacity: 1, y: 0, scale: 1 } : {},
+    transition: { ...spring, delay },
+  })
 
   return (
-    <section ref={ref} className="relative flex min-h-[100dvh] items-center justify-center overflow-hidden px-4 pt-16 pb-24">
-      <AnimatePresence>
-        {estrellas.map((s) => (
+    <section ref={ref} className="relative flex min-h-[100dvh] items-center justify-center overflow-hidden px-4 pt-14 pb-20">
+      {DECO.map((d, i) => (
+        <Flotante key={i} d={d} i={i} mx={mx} my={my} abierto={abierto} />
+      ))}
+
+      <div className="relative flex w-full max-w-3xl flex-col items-center text-center">
+
+        <div className="relative flex w-full items-center justify-center">
           <motion.span
-            key={s.id}
             aria-hidden
-            initial={{ x: '-20vw', y: 0, opacity: 0 }}
-            animate={{ x: '120vw', y: '30vh', opacity: [0, 1, 1, 0] }}
-            transition={{ duration: 1.2, ease: 'easeIn' }}
-            style={{ top: `${s.top}%` }}
-            className="pointer-events-none absolute left-0 h-[2px] w-32 rotate-[14deg] rounded-full bg-[linear-gradient(90deg,transparent,#dbe7ff)] shadow-[0_0_12px_#9cc3ff]"
-          />
-        ))}
-      </AnimatePresence>
+            style={{ y: xvY, rotate: xvRot }}
+            initial={{ opacity: 0, scale: 0.7 }}
+            animate={abierto ? { opacity: 1, scale: 1 } : {}}
+            transition={{ type: 'spring', duration: 1.1, bounce: 0.4, delay: 0.15 }}
+            className="chrome font-display text-[clamp(12rem,58vw,22rem)] leading-none font-extrabold tracking-[-0.06em] select-none"
+          >
+            XV
+          </motion.span>
+          <motion.h1
+            initial={{ opacity: 0, y: 40, rotate: -6, scale: 0.9 }}
+            animate={abierto ? { opacity: 1, y: 0, rotate: -4, scale: 1 } : {}}
+            transition={{ type: 'spring', duration: 1, bounce: 0.45, delay: 0.45 }}
+            className="absolute inset-x-0 top-1/2 -translate-y-1/2 pb-2 font-script text-[clamp(4.6rem,23vw,9.5rem)] leading-[1.1] text-cobalt drop-shadow-[0_4px_0_rgb(255_255_255)]"
+          >
+            {CONFIG.nombre}
+          </motion.h1>
+        </div>
 
-      <motion.div style={{ scale, opacity, y }} className="relative flex max-w-3xl flex-col items-center text-center">
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={abierto ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, ease, delay: 0.1 }}
-          className="text-xs tracking-[0.35em] text-sky uppercase"
-        >
-          Mis XV años
+        <motion.p {...aparece(0.75)} className="max-w-sm text-lg leading-snug text-balance text-soft md:text-xl">
+          Te invito a celebrar la noche más linda de mis 15.
         </motion.p>
 
-        <h1 className="mt-4 pb-2 font-script text-[clamp(4.2rem,17vw,10rem)] leading-[1.1] text-ink">
-          <Letras texto={CONFIG.nombre} delay={0.25} abierto={abierto} />
-        </h1>
-
-        <motion.p
-          initial={{ opacity: 0, y: 12 }}
-          animate={abierto ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7, ease, delay: 1 }}
-          className="mt-4 max-w-md font-serif text-2xl leading-snug text-mist italic md:text-3xl"
-        >
-          Te invito a celebrar conmigo una noche soñada.
-        </motion.p>
-
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={abierto ? { opacity: 1 } : {}}
-          transition={{ duration: 0.7, ease, delay: 1.2 }}
-          className="mt-6 text-lg font-medium tracking-wide text-ink"
-        >
+        <motion.p {...aparece(0.85)} className="mt-5 font-display text-2xl font-bold text-ink md:text-3xl">
           {fechaLarga}
           {CONFIG.hora && ` · ${CONFIG.hora} h`}
         </motion.p>
 
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={abierto ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7, ease, delay: 1.4 }}
-          className="mt-10 flex flex-col items-center gap-3 sm:flex-row"
-        >
-          <a href="#confirmar" className="btn btn-primary">
+        <motion.div {...aparece(1)} className="mt-9 flex flex-col items-center gap-3 sm:flex-row">
+          <a href="#confirmar" className="btn btn-primary text-base">
             Confirmar asistencia
           </a>
-          <button type="button" onClick={pedirDeseo} className="btn btn-ghost">
-            <Sparkle size={18} weight="fill" className="text-sky" />
-            Pedí un deseo
-          </button>
+          <a href="#musica" className="btn btn-soft text-base">
+            Poné tu tema
+          </a>
         </motion.div>
-      </motion.div>
+      </div>
     </section>
   )
 }

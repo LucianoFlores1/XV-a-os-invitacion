@@ -3,8 +3,10 @@ import { AnimatePresence, motion } from 'motion/react'
 import confetti from 'canvas-confetti'
 import { Minus, Plus, WhatsappLogo } from '@phosphor-icons/react'
 import { CONFIG } from '../config'
-import { fechaLarga } from '../lib/fecha'
+import { buzz, chime } from '../lib/juice'
 import { usePedidos } from '../lib/pedidos'
+import { Bow } from './Deco'
+import Reveal from './Reveal'
 
 const ease = [0.23, 1, 0.32, 1]
 
@@ -24,6 +26,9 @@ function armarMensaje({ nombre, voy, personas, mensaje }, pedidos) {
   return l.join('\n')
 }
 
+const campo =
+  'w-full rounded-2xl bg-paper px-4 py-3.5 text-ink shadow-[inset_0_0_0_1.5px_rgb(29_68_196/0.15)] focus:shadow-[inset_0_0_0_2px_rgb(29_68_196/0.6)] focus:outline-none'
+
 export default function Rsvp() {
   const { pedidos } = usePedidos()
   const [nombre, setNombre] = useState('')
@@ -31,12 +36,15 @@ export default function Rsvp() {
   const [personas, setPersonas] = useState(1)
   const [mensaje, setMensaje] = useState('')
   const [error, setError] = useState('')
+  const [shake, setShake] = useState(0)
   const [enviado, setEnviado] = useState(false)
 
   function enviar(e) {
     e.preventDefault()
     if (nombre.trim().length < 2) {
       setError('Contanos tu nombre para saber quién confirma.')
+      setShake((n) => n + 1)
+      buzz(30)
       return
     }
     setError('')
@@ -44,160 +52,174 @@ export default function Rsvp() {
     window.open(`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(texto)}`, '_blank', 'noopener')
     setEnviado(true)
     if (voy) {
-      const opts = { particleCount: 90, spread: 75, startVelocity: 45, colors: ['#9cc3ff', '#c4dbff', '#eef2fb', '#3d6fd6'], disableForReducedMotion: true }
-      confetti({ ...opts, angle: 60, origin: { x: 0, y: 0.8 } })
-      confetti({ ...opts, angle: 120, origin: { x: 1, y: 0.8 } })
+      buzz(25)
+      chime(784)
+      const opts = {
+        particleCount: 110,
+        spread: 80,
+        startVelocity: 50,
+        colors: ['#1d44c4', '#4f7cf0', '#9dbcff', '#ffffff', '#c9d8ff'],
+        shapes: ['star', 'circle'],
+        disableForReducedMotion: true,
+      }
+      confetti({ ...opts, angle: 60, origin: { x: 0, y: 0.85 } })
+      confetti({ ...opts, angle: 120, origin: { x: 1, y: 0.85 } })
     }
   }
 
   return (
-    <section id="confirmar" className="scroll-mt-6 px-4 py-24 md:py-36">
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.25 }}
-        transition={{ duration: 0.9, ease }}
-        className="relative mx-auto max-w-xl rounded-[28px] border border-sky/30 bg-[linear-gradient(180deg,rgb(18_42_99/0.7),rgb(11_21_51/0.85))] p-2 shadow-[0_40px_100px_-40px_rgb(46_92_190/0.6)]"
-      >
-        <div className="rounded-[22px] border border-sky/15 px-6 py-12 text-center sm:px-12">
-          <p className="font-serif text-xl text-mist italic">Si vas a venir, me encantaría saberlo</p>
-          <h2 className="mt-2 pb-1 font-script text-[clamp(3rem,11vw,4.5rem)] leading-[1.15] text-ink">Confirmá tu asistencia</h2>
-          <div aria-hidden className="mx-auto mt-5 flex items-center justify-center gap-3 text-sky/70">
-            <span className="h-px w-12 bg-sky/40" />
-            <span className="size-1.5 rotate-45 bg-sky/70" />
-            <span className="h-px w-12 bg-sky/40" />
-          </div>
-          <p className="mt-5 text-mist">Tu presencia es el regalo más lindo. {fechaLarga}.</p>
+    <section id="confirmar" className="scroll-mt-6 px-4 py-24 md:py-32">
+      <Reveal className="relative mx-auto max-w-xl">
+        <Bow className="absolute -top-14 left-1/2 z-10 w-32 -translate-x-1/2 drop-shadow-[0_10px_12px_rgb(29_68_196/0.3)]" />
+        <div className="[filter:drop-shadow(0_30px_40px_rgb(29_68_196/0.25))]">
+          <div className="lace bg-[linear-gradient(180deg,#ffffff,#f1f6ff)] px-6 pt-20 pb-16 text-center sm:px-12">
+            <p className="text-lg text-soft">Si vas a venir, me encantaría saberlo</p>
+            <h2 className="mt-1 pb-1 font-script text-[clamp(3.2rem,12vw,4.8rem)] leading-[1.1] text-cobalt">Confirmá tu asistencia</h2>
+            <p className="mt-3 text-soft">Tu presencia es el regalo más lindo.</p>
 
-          <AnimatePresence mode="wait" initial={false}>
-            {enviado ? (
-              <motion.div
-                key="gracias"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.4, ease }}
-                className="mt-10"
-              >
-                <p className="font-serif text-3xl text-ink">{voy ? '¡Gracias! Te espero.' : 'Gracias por avisar.'}</p>
-                <p className="mt-3 text-mist">Se abrió WhatsApp con tu mensaje listo. Solo falta tocar enviar.</p>
-                <button type="button" onClick={() => setEnviado(false)} className="btn btn-ghost mt-8">
-                  Editar mi respuesta
-                </button>
-              </motion.div>
-            ) : (
-              <motion.form
-                key="form"
-                onSubmit={enviar}
-                noValidate
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="mt-10 flex flex-col gap-6 text-left"
-              >
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="nombre" className="text-sm text-mist">
-                    Nombre y apellido
-                  </label>
-                  <input
-                    id="nombre"
-                    value={nombre}
-                    onChange={(e) => setNombre(e.target.value)}
-                    autoComplete="name"
-                    aria-invalid={Boolean(error)}
-                    aria-describedby={error ? 'nombre-error' : undefined}
-                    className={`rounded-2xl border bg-night/60 px-4 py-3.5 text-ink focus:outline-none ${error ? 'border-[#ff9b9b]' : 'border-line focus:border-sky/70'}`}
-                  />
-                  {error && (
-                    <p id="nombre-error" className="text-sm text-[#ffb3b3]">
-                      {error}
+            <AnimatePresence mode="wait" initial={false}>
+              {enviado ? (
+                <motion.div
+                  key="gracias"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ type: 'spring', duration: 0.6, bounce: 0.4 }}
+                  className="mt-10"
+                >
+                  <p className="font-display text-3xl font-extrabold tracking-tight text-ink">{voy ? '¡Nos vemos en la pista!' : 'Gracias por avisar'}</p>
+                  <p className="mt-3 text-soft">Se abrió WhatsApp con tu mensaje listo. Solo falta tocar enviar.</p>
+                  <button type="button" onClick={() => setEnviado(false)} className="btn btn-soft mt-8">
+                    Editar mi respuesta
+                  </button>
+                </motion.div>
+              ) : (
+                <motion.form
+                  key="form"
+                  onSubmit={enviar}
+                  noValidate
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2, ease }}
+                  className="mt-10 flex flex-col gap-6 text-left"
+                >
+                  <motion.div
+                    key={shake}
+                    animate={shake ? { x: [0, -8, 8, -5, 5, 0] } : {}}
+                    transition={{ duration: 0.4 }}
+                    className="flex flex-col gap-2"
+                  >
+                    <label htmlFor="nombre" className="text-sm font-semibold text-ink">
+                      Nombre y apellido
+                    </label>
+                    <input
+                      id="nombre"
+                      value={nombre}
+                      onChange={(e) => setNombre(e.target.value)}
+                      autoComplete="name"
+                      aria-invalid={Boolean(error)}
+                      aria-describedby={error ? 'nombre-error' : undefined}
+                      className={`${campo} ${error ? 'shadow-[inset_0_0_0_2px_#d33f5c]' : ''}`}
+                    />
+                    {error && (
+                      <p id="nombre-error" className="text-sm font-medium text-[#b42645]">
+                        {error}
+                      </p>
+                    )}
+                  </motion.div>
+
+                  <fieldset className="flex flex-col gap-2">
+                    <legend className="mb-2 text-sm font-semibold text-ink">¿Venís?</legend>
+                    <div className="relative grid grid-cols-2 rounded-full bg-paper p-1 shadow-[inset_0_0_0_1.5px_rgb(29_68_196/0.15)]">
+                      <motion.span
+                        aria-hidden
+                        className="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] rounded-full bg-cobalt shadow-[0_6px_14px_-6px_rgb(29_68_196/0.8)]"
+                        animate={{ x: voy ? '0%' : '100%' }}
+                        transition={{ type: 'spring', duration: 0.4, bounce: 0.25 }}
+                      />
+                      {[
+                        [true, '¡Sí, voy!'],
+                        [false, 'No puedo'],
+                      ].map(([v, txt]) => (
+                        <button
+                          key={txt}
+                          type="button"
+                          aria-pressed={voy === v}
+                          onClick={() => {
+                            setVoy(v)
+                            buzz(8)
+                          }}
+                          className={`relative rounded-full py-3 font-semibold transition-colors duration-200 ${voy === v ? 'text-white' : 'text-cobalt'}`}
+                        >
+                          {txt}
+                        </button>
+                      ))}
+                    </div>
+                  </fieldset>
+
+                  <AnimatePresence initial={false}>
+                    {voy && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3, ease }}
+                        className="overflow-hidden"
+                      >
+                        <div className="flex items-center justify-between gap-4">
+                          <span id="personas-label" className="text-sm font-semibold text-ink">
+                            ¿Cuántos van, contándote?
+                          </span>
+                          <div className="flex items-center gap-1 rounded-full bg-paper p-1 shadow-[inset_0_0_0_1.5px_rgb(29_68_196/0.15)]" role="group" aria-labelledby="personas-label">
+                            <button type="button" onClick={() => setPersonas((n) => Math.max(1, n - 1))} aria-label="Menos" disabled={personas <= 1} className="btn size-10 bg-white text-cobalt disabled:opacity-40">
+                              <Minus size={16} weight="bold" />
+                            </button>
+                            <AnimatePresence mode="popLayout" initial={false}>
+                              <motion.span
+                                key={personas}
+                                initial={{ y: -12, opacity: 0, scale: 0.7 }}
+                                animate={{ y: 0, opacity: 1, scale: 1 }}
+                                exit={{ y: 12, opacity: 0, scale: 0.7 }}
+                                transition={{ type: 'spring', duration: 0.35, bounce: 0.5 }}
+                                className="w-9 text-center font-display text-xl font-extrabold text-ink tabular-nums"
+                                aria-live="polite"
+                              >
+                                {personas}
+                              </motion.span>
+                            </AnimatePresence>
+                            <button type="button" onClick={() => setPersonas((n) => Math.min(10, n + 1))} aria-label="Más" className="btn size-10 bg-white text-cobalt">
+                              <Plus size={16} weight="bold" />
+                            </button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="mensaje" className="text-sm font-semibold text-ink">
+                      Un mensaje para {CONFIG.nombre} <span className="font-normal text-soft">(opcional)</span>
+                    </label>
+                    <textarea id="mensaje" rows={3} value={mensaje} onChange={(e) => setMensaje(e.target.value)} className={`${campo} resize-none`} />
+                  </div>
+
+                  {voy && pedidos.length > 0 && (
+                    <p className="rounded-2xl bg-baby/40 px-4 py-3 text-sm font-medium text-cobalt-deep">
+                      Va con tu lista de {pedidos.length} {pedidos.length === 1 ? 'tema' : 'temas'} para el DJ.
                     </p>
                   )}
-                </div>
 
-                <fieldset className="flex flex-col gap-2">
-                  <legend className="mb-2 text-sm text-mist">¿Venís?</legend>
-                  <div className="relative grid grid-cols-2 rounded-full border border-line bg-night/60 p-1">
-                    <motion.span
-                      aria-hidden
-                      className="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] rounded-full bg-sky"
-                      animate={{ x: voy ? '0%' : '100%' }}
-                      transition={{ type: 'spring', duration: 0.35, bounce: 0.15 }}
-                    />
-                    {[
-                      [true, '¡Sí, voy!'],
-                      [false, 'No puedo'],
-                    ].map(([v, txt]) => (
-                      <button
-                        key={txt}
-                        type="button"
-                        aria-pressed={voy === v}
-                        onClick={() => setVoy(v)}
-                        className={`relative rounded-full py-3 text-sm font-medium transition-colors duration-200 ${voy === v ? 'text-night' : 'text-ink'}`}
-                      >
-                        {txt}
-                      </button>
-                    ))}
-                  </div>
-                </fieldset>
-
-                <AnimatePresence initial={false}>
-                  {voy && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.3, ease }}
-                      className="overflow-hidden"
-                    >
-                      <div className="flex items-center justify-between gap-4">
-                        <span id="personas-label" className="text-sm text-mist">
-                          ¿Cuántos van, contándote?
-                        </span>
-                        <div className="flex items-center gap-1 rounded-full border border-line bg-night/60 p-1" role="group" aria-labelledby="personas-label">
-                          <button type="button" onClick={() => setPersonas((n) => Math.max(1, n - 1))} aria-label="Menos" className="btn size-10 text-ink disabled:opacity-40" disabled={personas <= 1}>
-                            <Minus size={16} weight="bold" />
-                          </button>
-                          <span className="w-8 text-center text-lg font-medium text-ink tabular-nums" aria-live="polite">
-                            {personas}
-                          </span>
-                          <button type="button" onClick={() => setPersonas((n) => Math.min(10, n + 1))} aria-label="Más" className="btn size-10 text-ink">
-                            <Plus size={16} weight="bold" />
-                          </button>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="mensaje" className="text-sm text-mist">
-                    Un mensaje para {CONFIG.nombre} <span className="text-mist/70">(opcional)</span>
-                  </label>
-                  <textarea
-                    id="mensaje"
-                    rows={3}
-                    value={mensaje}
-                    onChange={(e) => setMensaje(e.target.value)}
-                    className="resize-none rounded-2xl border border-line bg-night/60 px-4 py-3 text-ink focus:border-sky/70 focus:outline-none"
-                  />
-                </div>
-
-                {voy && pedidos.length > 0 && (
-                  <p className="text-sm text-sky">
-                    Incluye tus {pedidos.length} {pedidos.length === 1 ? 'tema pedido' : 'temas pedidos'} de la rocola.
-                  </p>
-                )}
-
-                <button type="submit" className="btn btn-primary mt-2 w-full py-4 text-base">
-                  <WhatsappLogo size={22} weight="fill" />
-                  Enviar por WhatsApp
-                </button>
-              </motion.form>
-            )}
-          </AnimatePresence>
+                  <button type="submit" className="btn btn-primary mt-1 w-full py-4 text-lg">
+                    <WhatsappLogo size={24} weight="fill" />
+                    Confirmar por WhatsApp
+                  </button>
+                </motion.form>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
-      </motion.div>
+      </Reveal>
     </section>
   )
 }
