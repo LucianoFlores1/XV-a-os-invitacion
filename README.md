@@ -10,13 +10,15 @@ Estética clara y luminosa con texturas: fondo de satén celeste con glitter azu
 - **Portada** con "XV" cromado, el nombre de María Luz y decoración que se mueve con el dedo, el mouse o al inclinar el celular.
 - **Cinta** azul con el nombre y la fecha, un mensaje en tarjeta con borde de puntilla y una **cuenta regresiva**.
 - **Guardá la fecha**: día, botón para agendar, "Cómo llegar" a Google Maps y dress code (elegante sport, sin ropa deportiva ni gorras).
-- **Poné tu tema**: buscás canciones, escuchás un pedacito en un CD holográfico y armás tu lista para el DJ.
-- **Confirmá tu asistencia**: abre WhatsApp (+54 9 387 482-4080) con el mensaje listo, incluida la lista de temas.
+- **Poné tu tema**: la playlist pública de Spotify de la fiesta, embebida, con un botón para abrirla y sumar canciones. Si tocan play ahí, la música de fondo se pausa sola.
+- **Regalo**: "Tu presencia es mi mayor regalo", el cofre en la entrada y el alias con botón para copiarlo.
+- **Confirmá tu asistencia**: abre WhatsApp (+54 9 387 482-4080) con el mensaje listo.
+- **Cierre**: "Con amor, María Luz".
 - Cada toque deja brillitos, y en Android vibra suave.
 
 ## Editar datos
 
-Todo está en [`src/config.js`](src/config.js): hora, nombre del salón, link de la playlist colaborativa de Spotify, temas de la música de fondo y atajos de búsqueda.
+Todo está en [`src/config.js`](src/config.js): hora, nombre del salón, link de la playlist de Spotify, alias para regalos y temas de la música de fondo.
 
 ## Texturas
 

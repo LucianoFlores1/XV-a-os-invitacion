@@ -11,6 +11,7 @@ import Mensaje from './components/Mensaje'
 import Countdown from './components/Countdown'
 import Info from './components/Info'
 import Musica from './components/Musica'
+import Regalo from './components/Regalo'
 import Rsvp from './components/Rsvp'
 import MusicButton from './components/MusicButton'
 import Reveal from './components/Reveal'
@@ -51,6 +52,7 @@ function Pagina() {
         <Countdown />
         <Info />
         <Musica />
+        <Regalo />
         <Rsvp />
       </main>
       <footer className="px-4 pt-6 pb-32 text-center">
@@ -58,7 +60,8 @@ function Pagina() {
           <Perlas className="mx-auto mb-6 w-full max-w-sm" caida={22} />
           <Bow className="mx-auto w-20" />
           <p className="mt-4 font-display text-2xl font-bold text-ink">¡Te espero!</p>
-          <p className="mt-1 font-script text-7xl text-cobalt">{CONFIG.nombre}</p>
+          <p className="mt-8 text-lg font-medium text-soft italic">Con amor,</p>
+          <p className="pb-2 font-script text-7xl leading-[1.15] text-cobalt">{CONFIG.nombre}</p>
           <p className="mt-3 text-sm font-semibold tracking-[0.25em] text-soft">
             {String(dia).padStart(2, '0')} . {String(mes).padStart(2, '0')} . {anio}
           </p>

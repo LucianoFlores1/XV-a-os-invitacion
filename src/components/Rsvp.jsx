@@ -4,23 +4,18 @@ import confetti from 'canvas-confetti'
 import { Minus, Plus, WhatsappLogo } from '@phosphor-icons/react'
 import { CONFIG } from '../config'
 import { buzz, chime } from '../lib/juice'
-import { usePedidos } from '../lib/pedidos'
 import { Bow, Perlas } from './Deco'
 import Reveal from './Reveal'
 
 const ease = [0.23, 1, 0.32, 1]
 
-function armarMensaje({ nombre, voy, personas, mensaje }, pedidos) {
+function armarMensaje({ nombre, voy, personas, mensaje }) {
   const l = []
   if (voy) {
     l.push(`¡Hola! Soy ${nombre} y confirmo mi asistencia a los XV de ${CONFIG.nombre}.`)
     l.push(`Personas: ${personas}`)
   } else {
     l.push(`¡Hola! Soy ${nombre}. Lamentablemente no voy a poder ir a los XV de ${CONFIG.nombre}.`)
-  }
-  if (voy && pedidos.length) {
-    l.push('', 'Temas que quiero que suenen:')
-    pedidos.forEach((t) => l.push(`- ${t.titulo} (${t.artista})`))
   }
   if (mensaje.trim()) l.push('', `Mensaje para ${CONFIG.nombre}: ${mensaje.trim()}`)
   return l.join('\n')
@@ -30,7 +25,6 @@ const campo =
   'w-full rounded-2xl bg-paper px-4 py-3.5 text-ink shadow-[inset_0_0_0_1.5px_rgb(29_68_196/0.15)] focus:shadow-[inset_0_0_0_2px_rgb(29_68_196/0.6)] focus:outline-none'
 
 export default function Rsvp() {
-  const { pedidos } = usePedidos()
   const [nombre, setNombre] = useState('')
   const [voy, setVoy] = useState(true)
   const [personas, setPersonas] = useState(1)
@@ -48,7 +42,7 @@ export default function Rsvp() {
       return
     }
     setError('')
-    const texto = armarMensaje({ nombre: nombre.trim(), voy, personas, mensaje }, pedidos)
+    const texto = armarMensaje({ nombre: nombre.trim(), voy, personas, mensaje })
     window.open(`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(texto)}`, '_blank', 'noopener')
     setEnviado(true)
     if (voy) {
@@ -76,7 +70,7 @@ export default function Rsvp() {
           <div className="lace paper-tex px-6 pt-24 pb-16 text-center sm:px-12">
             <p className="text-lg text-soft">Si vas a venir, me encantaría saberlo</p>
             <h2 className="mt-1 pb-1 font-script text-[clamp(3.2rem,12vw,4.8rem)] leading-[1.1] text-cobalt">Confirmá tu asistencia</h2>
-            <p className="mt-3 text-soft">Tu presencia es el regalo más lindo.</p>
+            <p className="mt-3 text-soft">Me haría muy feliz que estés.</p>
 
             <AnimatePresence mode="wait" initial={false}>
               {enviado ? (
@@ -205,11 +199,6 @@ export default function Rsvp() {
                     <textarea id="mensaje" rows={3} value={mensaje} onChange={(e) => setMensaje(e.target.value)} className={`${campo} resize-none`} />
                   </div>
 
-                  {voy && pedidos.length > 0 && (
-                    <p className="rounded-2xl bg-baby/40 px-4 py-3 text-sm font-medium text-cobalt-deep">
-                      Va con tu lista de {pedidos.length} {pedidos.length === 1 ? 'tema' : 'temas'} para el DJ.
-                    </p>
-                  )}
 
                   <button type="submit" className="btn btn-primary mt-1 w-full py-4 text-lg">
                     <WhatsappLogo size={24} weight="fill" />

@@ -96,6 +96,14 @@ export function MusicProvider({ children }) {
     }
   }, [previewId])
 
+  // Pausa la radio (por ejemplo cuando tocan play dentro de Spotify)
+  const pause = useCallback(() => {
+    wantRadio.current = false
+    radio.current?.pause()
+    preview.current?.pause()
+    setPreviewId(null)
+  }, [])
+
   const playPreview = useCallback(
     (tema) => {
       const p = preview.current
@@ -115,7 +123,7 @@ export function MusicProvider({ children }) {
   )
 
   return (
-    <MusicCtx.Provider value={{ start, toggle, playing, actual, disponible, playPreview, previewId }}>
+    <MusicCtx.Provider value={{ start, toggle, pause, playing, actual, disponible, playPreview, previewId }}>
       {children}
     </MusicCtx.Provider>
   )

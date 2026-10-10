@@ -16,9 +16,11 @@ export const CONFIG = {
   // WhatsApp para confirmar asistencia (código país + área + número, sin + ni espacios)
   whatsapp: '5493874824080',
 
-  // Link de una playlist COLABORATIVA de Spotify (opcional).
-  // Si queda vacío, los temas elegidos viajan igual dentro del mensaje de confirmación.
-  spotifyPlaylistUrl: '',
+  // Playlist de Spotify donde los invitados suman sus temas
+  spotifyPlaylistUrl: 'https://open.spotify.com/playlist/1XfF804ZYoSelUoefBbgbS',
+
+  // Alias para regalos
+  alias: 'maria.658.1822',
 
   // Música propia (opcional): poné un mp3 en /public y escribí su nombre, ej: 'musica.mp3'.
   // Si queda vacío suenan fragmentos de estos temas.
@@ -30,15 +32,5 @@ export const CONFIG = {
     { titulo: 'Una Foto Remix', artista: 'Mesita Nicki Nicole Emilia TINI' },
     { titulo: 'Automático', artista: 'María Becerra' },
     { titulo: 'DtMF', artista: 'Bad Bunny' },
-  ],
-
-  // Atajos de búsqueda de la sección de música
-  generos: [
-    { nombre: 'Cumbia y RKT', busqueda: 'cumbia rkt la joaqui callejero fino' },
-    { nombre: 'Cuarteto', busqueda: 'ulises bueno cuarteto' },
-    { nombre: 'Reggaetón', busqueda: 'bad bunny karol g reggaeton' },
-    { nombre: 'Trap y Bzrp', busqueda: 'bizarrap music sessions' },
-    { nombre: 'Pop', busqueda: 'emilia tini maria becerra' },
-    { nombre: 'Clásicos de fiesta', busqueda: 'los autenticos decadentes' },
   ],
 }

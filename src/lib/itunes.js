@@ -57,7 +57,3 @@ export async function buscarTemas(term, limit = 8) {
   cache.set(key, out)
   return out
 }
-
-export function spotifySearchUrl(tema) {
-  return `https://open.spotify.com/search/${encodeURIComponent(`${tema.titulo} ${tema.artista}`)}`
-}
