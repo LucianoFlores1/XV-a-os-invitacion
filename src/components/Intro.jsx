@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import confetti from 'canvas-confetti'
 import { animate, AnimatePresence, motion, useMotionTemplate, useMotionValue, useReducedMotion } from 'motion/react'
 import { CONFIG } from '../config'
 import { fechaLarga } from '../lib/fecha'
@@ -60,6 +61,12 @@ export default function Intro({ onOpen }) {
       setFase('revelando')
       onOpen()
       animate(r, max, { duration: 0.95, ease: easeInOut }).then(() => setVisible(false))
+      // lluvia de estrellitas cuando se abre la página
+      setTimeout(() => {
+        const base = { spread: 70, startVelocity: 38, gravity: 0.7, ticks: 260, scalar: 1.1, shapes: ['star'], colors: ['#1d44c4', '#4f7cf0', '#9dbcff', '#ffffff'], disableForReducedMotion: true }
+        confetti({ ...base, particleCount: 45, angle: 60, origin: { x: 0, y: 0.6 } })
+        confetti({ ...base, particleCount: 45, angle: 120, origin: { x: 1, y: 0.6 } })
+      }, 450)
     }, 1150)
   }
 

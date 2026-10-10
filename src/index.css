@@ -59,6 +59,8 @@ body {
   inset: -40px;
   background: url('./texturas/glitter-azul.png') 0 0 / 360px;
   opacity: 0.45;
+  will-change: opacity;
+  transform: translateZ(0);
   animation: glitter-a 7s ease-in-out infinite;
 }
 .page-bg::after {
@@ -71,21 +73,13 @@ body {
   0%, 100% { opacity: 0.45; }
   50% { opacity: 0.15; }
 }
+@keyframes glitter-c {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 0.35; }
+}
 @keyframes glitter-b {
   0%, 100% { opacity: 0.12; }
   50% { opacity: 0.42; }
-}
-
-/* Grano de papel: fijo y sin eventos para no costar repintados al scrollear */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  pointer-events: none;
-  opacity: 0.22;
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .38 0 0 0 0 .6 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 body.locked {
@@ -197,15 +191,17 @@ body.locked {
   50% { transform: translateY(-10px) rotate(calc(var(--r, 0deg) + 8deg)); }
 }
 .float {
+  will-change: transform;
   animation: float var(--d, 5s) ease-in-out infinite;
   animation-delay: var(--delay, 0s);
 }
 
 @keyframes twinkle {
-  0%, 100% { opacity: 1; scale: 1; }
-  50% { opacity: 0.35; scale: 0.7; }
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.7); }
 }
 .twinkle {
+  will-change: transform, opacity;
   animation: twinkle var(--d, 2.6s) ease-in-out infinite;
   animation-delay: var(--delay, 0s);
 }
@@ -214,13 +210,15 @@ body.locked {
   to { transform: translateX(-50%); }
 }
 .marquee {
+  will-change: transform;
   animation: marquee 26s linear infinite;
 }
 
 @keyframes spin {
-  to { rotate: 360deg; }
+  to { transform: rotate(360deg); }
 }
 .spin {
+  will-change: transform;
   animation: spin 2.8s linear infinite;
 }
 .spin.paused {
@@ -279,8 +277,9 @@ input, textarea {
   border-radius: inherit;
   pointer-events: none;
   background: url('./texturas/glitter.png') 0 0 / 300px;
-  mix-blend-mode: screen;
-  animation: glitter-a 4.5s ease-in-out infinite;
+  opacity: 0.8;
+  will-change: opacity;
+  animation: glitter-c 4.5s ease-in-out infinite;
 }
 
 /* Papel perlado con damasco tono sobre tono y trama de lino */
@@ -315,17 +314,13 @@ input, textarea {
   color: transparent;
   -webkit-text-stroke: 1.5px rgb(29 68 196 / 0.45);
   filter: drop-shadow(0 2px 0 rgb(255 255 255 / 0.9)) drop-shadow(0 10px 18px rgb(29 68 196 / 0.28));
-  animation: holo-move 9s ease-in-out infinite alternate;
-}
-@keyframes holo-move {
-  to { background-position: 100% 50%; }
+  will-change: transform;
 }
 .holo-rim {
   background:
     linear-gradient(180deg, #ffffff, #e9f0ff) padding-box,
     url('./texturas/holo.jpg') 0 0 / 300% auto border-box;
   border: 3px solid transparent;
-  animation: holo-move 7s ease-in-out infinite alternate;
 }
 
 /* Tira de puntilla con ojalitos */
@@ -353,4 +348,37 @@ input, textarea {
   background:
     conic-gradient(from 0deg, rgb(223 233 255 / 0.55), rgb(243 227 255 / 0.55), rgb(217 246 255 / 0.55), rgb(255 255 255 / 0.55), rgb(199 216 255 / 0.55), rgb(233 220 255 / 0.55), rgb(223 233 255 / 0.55)),
     url('./texturas/holo.jpg') center / cover;
+}
+
+/* Sombra difusa estática detrás de tarjetas con borde de puntilla */
+.sombra-suave {
+  position: absolute;
+  inset: 24px 18px -14px;
+  z-index: -1;
+  border-radius: 40px;
+  background: rgb(29 68 196 / 0.28);
+  filter: blur(26px);
+  transform: translateZ(0);
+  pointer-events: none;
+}
+
+/* Brillo que cruza los botones principales cada tanto (solo transform) */
+.btn-primary {
+  overflow: hidden;
+  isolation: isolate;
+}
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: -20% auto -20% 0;
+  width: 40%;
+  z-index: 1;
+  background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.55), transparent);
+  transform: translateX(-160%) skewX(-18deg);
+  animation: shine 4.2s var(--ease-in-out) infinite;
+  pointer-events: none;
+}
+@keyframes shine {
+  0%, 62% { transform: translateX(-160%) skewX(-18deg); }
+  100% { transform: translateX(380%) skewX(-18deg); }
 }

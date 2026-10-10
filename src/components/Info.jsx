@@ -1,9 +1,47 @@
 import { motion, useMotionValue, useSpring } from 'motion/react'
-import { ArrowUpRight, CalendarPlus, MapPin } from '@phosphor-icons/react'
+import { ArrowUpRight, BaseballCap, CalendarPlus, Check, CoatHanger, Dress, HighHeel, MapPin, SneakerMove, X } from '@phosphor-icons/react'
 import { CONFIG } from '../config'
 import { dia, diaSemana, googleCalendarUrl, mesNombre } from '../lib/fecha'
 import { Bow, Sparkle } from './Deco'
 import Reveal from './Reveal'
+
+const PRENDAS = [
+  { Icono: Dress, label: 'Vestido', ok: true },
+  { Icono: CoatHanger, label: 'Camisa', ok: true },
+  { Icono: HighHeel, label: 'Zapatos', ok: true },
+  { Icono: SneakerMove, label: 'Deportivo', ok: false },
+  { Icono: BaseballCap, label: 'Gorras', ok: false },
+]
+
+function Prenda({ p, i }) {
+  return (
+    <motion.li
+      initial={{ opacity: 0, y: 14, scale: 0.85 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, amount: 0.6 }}
+      transition={{ type: 'spring', duration: 0.6, bounce: 0.45, delay: 0.15 + i * 0.07 }}
+      whileTap={{ scale: 0.9, rotate: p.ok ? -6 : 6 }}
+      className="flex flex-col items-center gap-2 text-center"
+    >
+      <span
+        className={`relative flex size-12 items-center justify-center rounded-2xl sm:size-14 ${
+          p.ok ? 'bg-cobalt/10 text-cobalt' : 'bg-ink/5 text-soft/70'
+        }`}
+      >
+        <p.Icono size={28} weight={p.ok ? 'duotone' : 'regular'} />
+        {!p.ok && <span aria-hidden className="absolute h-[2px] w-10 rotate-[-35deg] rounded-full bg-[#c23b5a]/80" />}
+        <span
+          className={`absolute -right-1.5 -bottom-1.5 flex size-6 items-center justify-center rounded-full text-white ring-2 ring-white ${
+            p.ok ? 'bg-cobalt' : 'bg-[#c23b5a]'
+          }`}
+        >
+          {p.ok ? <Check size={13} weight="bold" /> : <X size={13} weight="bold" />}
+        </span>
+      </span>
+      <span className={`text-xs font-semibold ${p.ok ? 'text-ink' : 'text-soft'}`}>{p.label}</span>
+    </motion.li>
+  )
+}
 
 // Tarjeta que se inclina levemente siguiendo el mouse (solo en compu)
 function Tilt({ children, className = '' }) {
@@ -83,7 +121,12 @@ export default function Info() {
               <Bow className="absolute -top-2 right-6 w-20 rotate-12" />
               <p className="text-sm font-semibold tracking-[0.2em] text-soft uppercase">Dress code</p>
               <p className="mt-3 font-display text-4xl leading-none font-extrabold tracking-tight text-ink md:text-5xl">Elegante sport</p>
-              <p className="mt-4 max-w-xs text-soft">No se permite ropa deportiva ni gorras.</p>
+              <p className="mt-3 max-w-xs text-soft">No se permite ropa deportiva ni gorras.</p>
+              <ul className="mt-6 grid grid-cols-5 gap-2" aria-label="Qué sí y qué no">
+                {PRENDAS.map((p, i) => (
+                  <Prenda key={p.label} p={p} i={i} />
+                ))}
+              </ul>
             </Tilt>
           </Reveal>
         </div>

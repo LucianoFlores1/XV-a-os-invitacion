@@ -12,6 +12,7 @@ import Countdown from './components/Countdown'
 import Info from './components/Info'
 import Musica from './components/Musica'
 import Regalo from './components/Regalo'
+import Particulas from './components/Particulas'
 import Rsvp from './components/Rsvp'
 import MusicButton from './components/MusicButton'
 import Reveal from './components/Reveal'
@@ -44,6 +45,7 @@ function Pagina() {
           setAbierto(true)
         }}
       />
+      {abierto && <Particulas />}
       <MusicButton visible={abierto} />
       <main>
         <Hero abierto={abierto} />

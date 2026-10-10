@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { motion } from 'motion/react'
-import { ArrowUpRight, Plus, SpotifyLogo } from '@phosphor-icons/react'
+import { ArrowUpRight, SpotifyLogo } from '@phosphor-icons/react'
 import { CONFIG } from '../config'
 import { useMusic } from '../lib/music'
 import { Sparkle } from './Deco'
@@ -17,7 +17,7 @@ function CD({ girando }) {
       <div aria-hidden className="absolute inset-[-12%] rounded-full bg-[radial-gradient(circle,rgb(29_68_196/0.2),transparent_65%)]" />
       <div className={`cd-holo spin ${girando ? '' : 'paused'} absolute inset-0 rounded-full shadow-[0_30px_60px_-24px_rgb(29_68_196/0.65)]`}>
         <div className="absolute inset-0 rounded-full bg-[repeating-radial-gradient(circle_at_center,rgb(255_255_255/0)_0px,rgb(255_255_255/0)_3px,rgb(255_255_255/0.35)_4px)]" />
-        <div className="absolute inset-0 rounded-full bg-[conic-gradient(from_200deg,transparent_0deg,rgb(255_255_255/0.85)_25deg,transparent_60deg,transparent_180deg,rgb(255_255_255/0.6)_210deg,transparent_250deg)] mix-blend-soft-light" />
+        <div className="absolute inset-0 rounded-full bg-[conic-gradient(from_200deg,transparent_0deg,rgb(255_255_255/0.5)_25deg,transparent_60deg,transparent_180deg,rgb(255_255_255/0.35)_210deg,transparent_250deg)]" />
         <div className="absolute inset-0 rounded-full shadow-[inset_0_0_0_1px_rgb(29_68_196/0.15)]" />
         <div className="satin-cobalt absolute inset-[31%] flex items-center justify-center overflow-hidden rounded-full ring-[6px] ring-white/80">
           <span className="font-script text-3xl text-white">{CONFIG.iniciales}</span>
@@ -60,28 +60,12 @@ export default function Musica() {
             <Sparkle className="twinkle absolute top-2 left-[12%] size-5 text-cobalt/70" />
             <Sparkle className="twinkle absolute top-10 right-[12%] size-4 text-cobalt/60" style={{ '--delay': '-1.2s' }} />
             <CD girando={playing} />
-            <ol className="mx-auto mt-8 flex max-w-xs flex-col gap-3 text-left">
-              {[
-                'Abrí la playlist en Spotify.',
-                <>
-                  Tocá <Plus size={14} weight="bold" className="inline -translate-y-px" /> para sumar canciones.
-                </>,
-                'Elegí tus temas favoritos para bailar.',
-              ].map((t, i) => (
-                <li key={i} className="flex items-center gap-3 text-ink">
-                  <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-cobalt font-display text-sm font-bold text-white">
-                    {i + 1}
-                  </span>
-                  <span>{t}</span>
-                </li>
-              ))}
-            </ol>
             <motion.a
               href={CONFIG.spotifyPlaylistUrl}
               target="_blank"
               rel="noreferrer"
               whileTap={{ scale: 0.96 }}
-              className="btn btn-primary mt-8 text-base"
+              className="btn btn-primary mt-10 text-base"
             >
               <SpotifyLogo size={22} weight="fill" />
               Sumar mis temas

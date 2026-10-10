@@ -18,7 +18,7 @@ export default function MusicButton({ visible }) {
           transition={{ type: 'spring', duration: 0.6, bounce: 0.4, delay: 0.6 }}
           whileTap={{ scale: 0.92 }}
           aria-label={playing ? 'Pausar música' : 'Reproducir música'}
-          className="fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 flex max-w-[calc(100vw-2rem)] items-center gap-3 rounded-full bg-white/90 py-1.5 pr-4 pl-1.5 text-left shadow-[0_0_0_1px_rgb(29_68_196/0.12),0_14px_30px_-10px_rgb(29_68_196/0.55)] backdrop-blur-md"
+          className="fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 flex max-w-[calc(100vw-2rem)] items-center gap-3 rounded-full bg-white py-1.5 pr-4 pl-1.5 text-left shadow-[0_0_0_1px_rgb(29_68_196/0.12),0_14px_30px_-10px_rgb(29_68_196/0.55)]"
         >
           <span className={`flex size-11 shrink-0 items-center justify-center rounded-full transition-colors ${playing ? 'bg-cobalt text-white' : 'bg-baby/50 text-cobalt'}`}>
             {playing ? (
