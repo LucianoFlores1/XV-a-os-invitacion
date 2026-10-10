@@ -58,7 +58,7 @@ export default function Regalo() {
             <div className="relative">
               <p className="font-script text-[clamp(2.8rem,10vw,3.8rem)] leading-[1.1] text-cobalt">Tu presencia es mi mayor regalo</p>
               <p className="mx-auto mt-5 max-w-sm text-lg text-balance text-soft">
-                Si pensás en un obsequio, te dejo mi alias:
+                Y si aun así querés hacerme un obsequio, te dejo una sugerencia: mi alias.
               </p>
               <motion.button
                 ref={boton}
