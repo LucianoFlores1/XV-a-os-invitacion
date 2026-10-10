@@ -31,7 +31,7 @@ export function MusicProvider({ children }) {
     if (CONFIG.musicaPropia) {
       a.src = `${import.meta.env.BASE_URL}${CONFIG.musicaPropia}`
       a.loop = true
-      setActual({ titulo: 'Música de la fiesta', artista: CONFIG.nombre })
+      setActual(CONFIG.radio[0] || { titulo: 'Música de la fiesta', artista: CONFIG.nombre })
     } else {
       Promise.all(
         CONFIG.radio.map((t) =>

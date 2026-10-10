@@ -22,15 +22,9 @@ export const CONFIG = {
   // Alias para regalos
   alias: 'maria.658.1822',
 
-  // Música propia (opcional): poné un mp3 en /public y escribí su nombre, ej: 'musica.mp3'.
-  // Si queda vacío suenan fragmentos de estos temas.
+  // Música de fondo: Miley Cyrus, The Climb.
+  // Sin archivo propio suena el fragmento oficial de 30 segundos (iTunes) en loop.
+  // Para que suene el tema completo, poné el mp3 en /public y escribí su nombre acá, ej: 'the-climb.mp3'.
   musicaPropia: '',
-  radio: [
-    { titulo: 'La Original', artista: 'Emilia TINI' },
-    { titulo: 'La Morocha', artista: 'Luck Ra BM' },
-    { titulo: 'Si Antes Te Hubiera Conocido', artista: 'Karol G' },
-    { titulo: 'Una Foto Remix', artista: 'Mesita Nicki Nicole Emilia TINI' },
-    { titulo: 'Automático', artista: 'María Becerra' },
-    { titulo: 'DtMF', artista: 'Bad Bunny' },
-  ],
+  radio: [{ titulo: 'The Climb', artista: 'Miley Cyrus' }],
 }
