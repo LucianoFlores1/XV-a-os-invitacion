@@ -10,14 +10,8 @@ import Reveal from './Reveal'
 
 const ease = [0.23, 1, 0.32, 1]
 
-function armarMensaje({ nombre, voy, personas, mensaje }) {
-  const l = []
-  if (voy) {
-    l.push(`¡Hola! Soy ${nombre} y confirmo mi asistencia a los XV de ${CONFIG.nombre}.`)
-    l.push(`Personas: ${personas}`)
-  } else {
-    l.push(`¡Hola! Soy ${nombre}. Lamentablemente no voy a poder ir a los XV de ${CONFIG.nombre}.`)
-  }
+function armarMensaje({ nombre, personas, mensaje }) {
+  const l = [`¡Hola! Soy ${nombre} y confirmo mi asistencia a los XV de ${CONFIG.nombre}.`, `Personas: ${personas}`]
   if (mensaje.trim()) l.push('', `Mensaje para ${CONFIG.nombre}: ${mensaje.trim()}`)
   return l.join('\n')
 }
@@ -27,7 +21,6 @@ const campo =
 
 export default function Rsvp() {
   const [nombre, setNombre] = useState('')
-  const [voy, setVoy] = useState(true)
   const [personas, setPersonas] = useState(1)
   const [mensaje, setMensaje] = useState('')
   const [error, setError] = useState('')
@@ -43,23 +36,21 @@ export default function Rsvp() {
       return
     }
     setError('')
-    const texto = armarMensaje({ nombre: nombre.trim(), voy, personas, mensaje })
+    const texto = armarMensaje({ nombre: nombre.trim(), personas, mensaje })
     window.open(`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(texto)}`, '_blank', 'noopener')
     setEnviado(true)
-    if (voy) {
-      buzz(25)
-      arpegio()
-      const opts = {
-        particleCount: 110,
-        spread: 80,
-        startVelocity: 50,
-        colors: ['#1d44c4', '#4f7cf0', '#9dbcff', '#ffffff', '#c9d8ff'],
-        shapes: ['star', 'circle'],
-        disableForReducedMotion: true,
-      }
-      confetti({ ...opts, angle: 60, origin: { x: 0, y: 0.85 } })
-      confetti({ ...opts, angle: 120, origin: { x: 1, y: 0.85 } })
+    buzz(25)
+    arpegio()
+    const opts = {
+      particleCount: 110,
+      spread: 80,
+      startVelocity: 50,
+      colors: ['#1d44c4', '#4f7cf0', '#9dbcff', '#ffffff', '#c9d8ff'],
+      shapes: ['star', 'circle'],
+      disableForReducedMotion: true,
     }
+    confetti({ ...opts, angle: 60, origin: { x: 0, y: 0.85 } })
+    confetti({ ...opts, angle: 120, origin: { x: 1, y: 0.85 } })
   }
 
   return (
@@ -85,7 +76,7 @@ export default function Rsvp() {
                   transition={{ type: 'spring', duration: 0.6, bounce: 0.4 }}
                   className="mt-10"
                 >
-                  <p className="font-display text-3xl font-extrabold tracking-tight text-ink">{voy ? '¡Nos vemos en la pista!' : 'Gracias por avisar'}</p>
+                  <p className="font-display text-3xl font-extrabold tracking-tight text-ink">¡Nos vemos en la pista!</p>
                   <p className="mt-3 text-soft">Se abrió WhatsApp con tu mensaje listo. Solo falta tocar enviar.</p>
                   <button type="button" onClick={() => setEnviado(false)} className="btn btn-soft mt-8">
                     Editar mi respuesta
@@ -127,47 +118,8 @@ export default function Rsvp() {
                     )}
                   </motion.div>
 
-                  <fieldset className="flex flex-col gap-2">
-                    <legend className="mb-2 text-sm font-semibold text-ink">¿Venís?</legend>
-                    <div className="relative grid grid-cols-2 rounded-full bg-paper p-1 shadow-[inset_0_0_0_1.5px_rgb(29_68_196/0.15)]">
-                      <motion.span
-                        aria-hidden
-                        className="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] rounded-full bg-cobalt shadow-[0_6px_14px_-6px_rgb(29_68_196/0.8)]"
-                        animate={{ x: voy ? '0%' : '100%' }}
-                        transition={{ type: 'spring', duration: 0.4, bounce: 0.25 }}
-                      />
-                      {[
-                        [true, '¡Sí, voy!'],
-                        [false, 'No puedo'],
-                      ].map(([v, txt]) => (
-                        <button
-                          key={txt}
-                          type="button"
-                          aria-pressed={voy === v}
-                          data-sonido
-                          onClick={() => {
-                            setVoy(v)
-                            buzz(8)
-                            blip(v)
-                          }}
-                          className={`relative rounded-full py-3 font-semibold transition-colors duration-200 ${voy === v ? 'text-white' : 'text-cobalt'}`}
-                        >
-                          {txt}
-                        </button>
-                      ))}
-                    </div>
-                  </fieldset>
 
-                  <AnimatePresence initial={false}>
-                    {voy && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.3, ease }}
-                        className="overflow-hidden"
-                      >
-                        <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center justify-between gap-4">
                           <span id="personas-label" className="text-sm font-semibold text-ink">
                             ¿Cuántos van, contándote?
                           </span>
@@ -193,9 +145,6 @@ export default function Rsvp() {
                             </button>
                           </div>
                         </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
 
                   <div className="flex flex-col gap-2">
                     <label htmlFor="mensaje" className="text-sm font-semibold text-ink">
